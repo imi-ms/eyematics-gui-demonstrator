@@ -51,7 +51,7 @@ export class MyElement extends LitElement {
 
     private _onClick(e: Event) {
         console.log(e.currentTarget);
-        this.activeTab = e.currentTarget.id
+        this.activeTab = (e.currentTarget as Element).id
         console.log(this.activeTab)
     }
 
@@ -64,7 +64,6 @@ export class MyElement extends LitElement {
     }
 
     private _handleSubmit(e: Event) {
-        console.log(this.formData);
     }
 
 

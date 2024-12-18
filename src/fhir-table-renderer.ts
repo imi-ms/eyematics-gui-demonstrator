@@ -44,11 +44,11 @@ export class FhirTableRenderer<T> extends LitElement {
                 console.log("result.system.value", result.system?.value);
 
                 if (typeof result === "string") {
-                    resultList += result
+                    resultList.push(result)
                 } else if (result.system && result.system.value === "http://snomed.info/sct") {
-                    resultList += `SCT ${result.code.value} "${result.display.value}"`
+                    resultList.push(`SCT ${result.code.value} "${result.display.value}"`)
                 } else {
-                    resultList += JSON.stringify(result)
+                    resultList.push(JSON.stringify(result))
                 }
             }
 
