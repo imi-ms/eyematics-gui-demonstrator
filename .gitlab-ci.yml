@@ -10,7 +10,7 @@ pages:
   script:
     - npm run build
     - mkdir public
-    - cp dist public
+    - cp dist public -r
   artifacts:
     paths:
       - public
