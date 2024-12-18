@@ -1,0 +1,21 @@
+{
+  "name": "eyematics-kds",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fhir-typescript/r4b-core": "^0.0.12-beta.18",
+    "bulma": "^1.0.2",
+    "fhirpath": "^3.15.2",
+    "lit": "^3.2.1"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1"
+  }
+}
