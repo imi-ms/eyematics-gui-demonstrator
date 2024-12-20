@@ -106,7 +106,5 @@ export class TonometryComponent extends LitElement {
     }
 
 
-    static styles = [
-        bulmaStyles
-    ]
+    static styles = [bulmaStyles]
 }

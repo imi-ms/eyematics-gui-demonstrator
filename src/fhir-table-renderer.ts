@@ -23,6 +23,22 @@ export class FhirTableRenderer<T> extends LitElement {
     // CSS for the table
     static styles = [bulmaStyles]
 
+    _openModal(item: any) {
+        let json = JSON.stringify(item, null, 2);
+        let el = this.shadowRoot.getElementById("mycontent") //as HTMLDialogElement;
+
+        this.shadowRoot.querySelector(".modal-card-body").innerHTML = "<pre>" + json + "</pre>";
+
+        el.classList.add('is-active');
+
+    }
+
+    _closeModal() {
+        let el = this.shadowRoot.getElementById("mycontent") //as HTMLDialogElement;
+        el.classList.remove('is-active');
+
+    }
+
     // Render the table
     render() {
         const columnNames = this.columnMap !== null ? Object.keys(this.columnMap) : []; // Extract column names dynamically
@@ -41,24 +57,25 @@ export class FhirTableRenderer<T> extends LitElement {
             let resultList = [];
             for (let resultElement of result) {
                 console.log("columName", columnName, "result", resultElement);
-                console.log("result.system.value", result.system?.value);
+                console.log("result.system", resultElement.system);
+                console.log("result.system.value", resultElement.system?.value);
 
-                if (typeof result === "string") {
-                    resultList.push(result)
-                } else if (result.system && result.system.value === "http://snomed.info/sct") {
-                    resultList.push(`SCT ${result.code.value} "${result.display.value}"`)
+                if (typeof resultElement === "string") {
+                    resultList.push(resultElement)
+                } else if (resultElement.system && resultElement.system.value === "http://snomed.info/sct") {
+                    resultList.push(`SCT ${resultElement.code.value} "${resultElement.display.value}"`)
                 } else {
-                    resultList.push(JSON.stringify(result))
+                    resultList.push(JSON.stringify(resultElement))
                 }
             }
 
-            return JSON.stringify(resultList);
+            return resultList.join("\n");
         }
 
         return html`
             <table class="table">
                 <thead>
-                <tr>
+                <tr><th></th>
                     ${columnNames.map((columnName) => html`
                         <th>${columnName}</th>`)}
                 </tr>
@@ -67,6 +84,7 @@ export class FhirTableRenderer<T> extends LitElement {
                 ${(this.data ?? []).map(
                         (item) => html`
                             <tr>
+                                <td @click="${() => this._openModal(item)}"><a>🔥</a></td>
                                 ${columnNames.map((columnName) => html`
                                     <td>${(extracted(this.columnMap, columnName, item))}</td>`)}
                             </tr>
@@ -74,6 +92,60 @@ export class FhirTableRenderer<T> extends LitElement {
                 )}
                 </tbody>
             </table>
+
+            <div class="modal" id="mycontent">
+                <div class="modal-background"></div>
+                <dialog class="modal-card" >
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">FHIR Resource</p>
+                        <button class="delete" aria-label="close" @click="${this._closeModal}"></button>
+                    </header>
+                    <section class="modal-card-body">
+                    </section>
+                </dialog>
+            </div>
+
+            <script type="text/javascript">
+                window.openModal = function($el) {
+                    
+                }
+
+                window.closeModal = function ($el) {
+                    $el.classList.remove('is-active');
+                }
+
+                window.closeAllModals = function () {
+                    (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+                        closeModal($modal);
+                    });
+                }
+
+                // Add a click event on buttons to open a specific modal
+                (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+                    const modal = $trigger.dataset.target;
+                    const $target = document.getElementById(modal);
+
+                    $trigger.addEventListener('click', () => {
+                        window.openModal($target);
+                    });
+                });
+
+                // Add a click event on various child elements to close the parent modal
+                (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+                    const $target = $close.closest('.modal');
+
+                    $close.addEventListener('click', () => {
+                        window.closeModal($target);
+                    });
+                });
+
+                // Add a keyboard event to close all modals
+                document.addEventListener('keydown', (event) => {
+                    if(event.key === "Escape") {
+                        window.closeAllModals();
+                    }
+                });
+            </script>
         `;
     }
 }

@@ -9,6 +9,7 @@ import {TonometryComponent} from "./tonometry-component.ts";
 import {ColumnConfig, FhirTableRenderer} from "./fhir-table-renderer.ts";
 import {uiModel2Fhir} from "./tonometry-to-fhir.ts";
 import {Observation} from "@fhir-typescript/r4b-core/dist/fhir/Observation";
+import {VisusComponent} from "./visus-component.ts";
 
 @customElement('my-element')
 export class MyElement extends LitElement {
@@ -18,33 +19,51 @@ export class MyElement extends LitElement {
 
     @state()
     private tonometryData: Observation[] = [];
+    private visusData: Observation[] = [];
 
-    private columnMap:ColumnConfig<TonometrieData> = {
+    private columnMapTonometry:ColumnConfig<TonometrieData> = {
         'Messzeitpunkt': "Observation.effectiveDateTime",
-        'Auge': "Observation.bodySite.coding",
+        'Seitigkeit': "Observation.bodySite.coding",
+        'Code': "Observation.code.coding",
         'Tonometrie Typ': "Observation.value",
-        'Augeninnendruck': "Observation.value",
-        'Linkes Auge (Aufgetropft)': "Observation"
+        'Augeninnendruck': "Observation.valueQuantity.value",
+        'Einheit': "Observation.valueQuantity.unit",
+    };
+
+    private columnMapVisus:ColumnConfig<TonometrieData> = {
+        'Messzeitpunkt': "Observation.effectiveDateTime",
+        'Seitigkeit': "Observation.bodySite.coding",
+        'Code': "Observation.code.coding",
     };
 
     render() {
         //do not treeshake
         new TonometryComponent()
         new FhirTableRenderer()
+        new VisusComponent()
 
         return html`
             <div class="tabs is-medium">
                 <ul>
-                    <li class="${classMap({'is-active' : this.activeTab === 'tonometryTab'})}" @click=${this._onClick}
+                    <li class="${classMap({'is-active': this.activeTab === 'tonometryTab'})}" @click=${this._onClick}
                         id="tonometryTab"><a>Augeninnendruck</a></li>
-                    <li class="${classMap({'is-active' :  this.activeTab === 'visusTab'})}" @click=${this._onClick}
+                    <li class="${classMap({'is-active': this.activeTab === 'visusTab'})}" @click=${this._onClick}
                         id="visusTab"><a>Visus</a></li>
                 </ul>
             </div>
 
-            <tonometry-component  @add-observation="${this._handleAdd}" ></tonometry-component>
+            ${this.activeTab == "tonometryTab" ?
+            html`<tonometry-component @add-observation="${this._handleAdd}"></tonometry-component>`
+                    :html`<visus-component @add-observation="${this._handleAdd}"></visus-component>`
+        }
+            ${this.activeTab == "tonometryTab" ?
+            html`<fhir-table-renderer id="table"
+                                      .columnMap="${this.columnMapTonometry}"
+                                      .data="${this.tonometryData}"></fhir-table-renderer>`
+            :html`<fhir-table-renderer id="table"
+                                        .columnMap="${this.columnMapVisus}"
+                                        .data="${this.visusData}"></fhir-table-renderer>`}
             
-            <fhir-table-renderer id="table" .columnMap="${this.columnMap}" .data="${this.tonometryData}"></fhir-table-renderer>
         `
     }
 
