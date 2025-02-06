@@ -137,6 +137,7 @@ export class VisusComponent extends LitElement {
 
             .horizontal-fields .box {
                 width: 45%;
+				margin-bottom: 0px;
             }
 
             .inputs-inline {

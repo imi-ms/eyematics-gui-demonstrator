@@ -21,7 +21,15 @@ export class FhirTableRenderer<T> extends LitElement {
     columnMap: ColumnConfig<T> = {};
 
     // CSS for the table
-    static styles = [bulmaStyles]
+    static styles = [
+		bulmaStyles,
+		css`
+			.modal-card {
+				padding: 0px;
+				background-color: transparent;
+			}
+		`,
+	];
 
     _openModal(item: any) {
         let json = JSON.stringify(item, null, 2);
