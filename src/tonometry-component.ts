@@ -17,7 +17,6 @@ export class TonometryComponent extends LitElement {
 
     render() {
         return html`
-
             <section class="section">
                 <div class="container">
                     <!-- Header Section -->
@@ -55,7 +54,7 @@ export class TonometryComponent extends LitElement {
                                         <p class="button is-static is-small">mmHg</p>
                                     </div>
                                     <div class="field ml-2">
-                                        <label class="checkbox"><input type="checkbox" .value="${this.formData.rightEye.isDropped}">aufgetropft</label>
+                                        <label class="checkbox"><input type="checkbox" .value="${this.formData.rightEye.isDropped}"> aufgetropft</label>
                                     </div>
                                 </div>
                             </div>
@@ -75,7 +74,7 @@ export class TonometryComponent extends LitElement {
                                         <p class="button is-static is-small">mmHg</p>
                                     </div>
                                     <div class="field ml-2">
-                                        <label class="checkbox"><input type="checkbox" .value="${this.formData.leftEye.isDropped}">aufgetropft</label>
+                                        <label class="checkbox"><input type="checkbox" .value="${this.formData.leftEye.isDropped}"> aufgetropft</label>
                                     </div>
                                 </div>
                             </div>
