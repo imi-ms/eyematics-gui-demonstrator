@@ -1,22 +1,20 @@
-import {customElement, state} from "lit/decorators.js";
-import {css, html, LitElement} from "lit";
-import {bulmaStyles} from "./bulma-styles.ts";
-import {TonometrieData} from "./tonometryData.ts";
+import { customElement, state } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { bulmaStyles } from "./bulma-styles.ts";
+import { IOPMethod, TonometrieData } from "./tonometryData.ts";
 
-@customElement('visus-component')
+@customElement("visus-component")
 export class VisusComponent extends LitElement {
+	@state()
+	private formData: TonometrieData = {
+		tonometryType: IOPMethod.Applanation,
+		recordedDate: new Date().toISOString().slice(0, 16),
+		rightEye: { pressure: 18, isDropped: false },
+		leftEye: { pressure: 20, isDropped: false },
+	};
 
-
-    @state()
-    private formData: TonometrieData = {
-        tonometryType: 'applanatorisch',
-        recordedDate: new Date().toISOString().slice(0, 16),
-        rightEye: { pressure: 18, isDropped: false },
-        leftEye: { pressure: 20, isDropped: false },
-    };
-
-    render() {
-        return html`
+	render() {
+		return html`
             <section class="section visus-container">
                 <div class="container">
                     <!-- Header -->
@@ -169,69 +167,63 @@ export class VisusComponent extends LitElement {
                     </div>
                     <button class="button is-primary" @click="${this._handleSubmit}">Erfassen</button>
             </section>
-        `
-    }
+        `;
+	}
 
+	private getFormData(): TonometrieData {
+		return this.formData;
+	}
 
+	private _handleSubmit(_: Event) {
+		const event = new CustomEvent("add-observation", {
+			detail: this.getFormData(),
+			bubbles: false, // Allow the event to bubble up
+			composed: true, // Allow the event to cross shadow DOM boundaries
+		});
 
+		this.dispatchEvent(event);
+	}
 
-    private getFormData(): TonometrieData {
-        return this.formData;
-    }
+	static styles = [
+		bulmaStyles,
+		css`
+			.visus-container {
+				margin: 1rem auto;
+				max-width: 800px;
+			}
 
-    private _handleSubmit(_: Event) {
-        console.log(this.getFormData());
+			.visus-input select {
+				width: 10em;
+			}
+			.visus-input select:invalid {
+				color: gray;
+			}
 
-        const event = new CustomEvent('add-observation', {
-            detail: this.getFormData() ,
-            bubbles: false,  // Allow the event to bubble up
-            composed: true  // Allow the event to cross shadow DOM boundaries
-        });
-        this.dispatchEvent(event);
-    }
+			.field-label {
+				font-weight: bold;
+				text-align: center;
+			}
 
+			.horizontal-fields {
+				display: flex;
+				justify-content: space-between;
+				margin: 0.75em;
+			}
 
-    static styles = [
-        bulmaStyles,
-        css`
-            .visus-container {
-                margin: 1rem auto;
-                max-width: 800px;
-            }
-            
-            .visus-input select {
-                width: 10em
-            }
-            .visus-input select:invalid 
-            { 
-                color: gray;
-            }
-
-            .field-label {
-                font-weight: bold;
-                text-align: center;
-            }
-
-            .horizontal-fields {
-                display: flex;
-                justify-content: space-between;
-                margin: 0.75em
-            }
-
-            .horizontal-fields .box {
-                width: 45%;
+			.horizontal-fields .box {
+				width: 45%;
 				margin-bottom: 0;
-            }
+			}
 
-            .inputs-inline {
-                display: flex;
-                gap: 0.5rem;
-                margin-bottom: 0.75rem;
-            }
+			.inputs-inline {
+				display: flex;
+				gap: 0.5rem;
+				margin-bottom: 0.75rem;
+			}
 
-            .is-small-input {
-                width: 30%;
-            }
-        `
-    ]
+			.is-small-input {
+				width: 30%;
+			}
+		`,
+	];
 }
