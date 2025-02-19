@@ -24,7 +24,7 @@ export class MyElement extends LitElement {
 		Messzeitpunkt: "Observation.effectiveDateTime",
 		Seitigkeit: "Observation.bodySite.coding",
 		Code: "Observation.code.coding",
-		"Tonometrie Typ": "Observation.value",
+		"Tonometrie Typ": "Observation.method.coding",
 		Augeninnendruck: "Observation.valueQuantity.value",
 		Einheit: "Observation.valueQuantity.unit",
 	};

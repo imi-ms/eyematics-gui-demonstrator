@@ -27,6 +27,7 @@ export class FhirTableRenderer<T> extends LitElement {
 			.modal-card {
 				padding: 0px;
 				background-color: transparent;
+				width: 60%;
 			}
 		`,
 	];
@@ -66,6 +67,10 @@ export class FhirTableRenderer<T> extends LitElement {
 					resultList.push(resultElement);
 				} else if (resultElement.system && resultElement.system.value === "http://snomed.info/sct") {
 					resultList.push(`SCT ${resultElement.code.value} "${resultElement.display.value}"`);
+				} else if (resultElement.system && resultElement.system.value === "http://loinc.org") {
+					resultList.push(`loinc#${resultElement.code.value} "${resultElement.display.value}"`);
+				} else if (resultElement.value) {
+					resultList.push(resultElement.value);
 				} else {
 					resultList.push(JSON.stringify(resultElement));
 				}
