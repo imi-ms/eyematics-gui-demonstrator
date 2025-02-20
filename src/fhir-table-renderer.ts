@@ -65,12 +65,14 @@ export class FhirTableRenderer<T> extends LitElement {
 			for (let resultElement of result) {
 				if (typeof resultElement === "string") {
 					resultList.push(resultElement);
-				} else if (resultElement.system && resultElement.system.value === "http://snomed.info/sct") {
-					resultList.push(`SCT ${resultElement.code.value} "${resultElement.display.value}"`);
-				} else if (resultElement.system && resultElement.system.value === "http://loinc.org") {
-					resultList.push(`loinc#${resultElement.code.value} "${resultElement.display.value}"`);
 				} else if (resultElement.value) {
 					resultList.push(resultElement.value);
+				} else if (resultElement.system && resultElement.system.value === "http://snomed.info/sct") {
+					resultList.push(`snomed#${resultElement.code.value} "${resultElement.display.value}"`);
+				} else if (resultElement.system && resultElement.system.value === "http://loinc.org") {
+					resultList.push(`loinc#${resultElement.code.value} "${resultElement.display.value}"`);
+				} else if (resultElement.system) {
+					resultList.push(`${resultElement.code.value} "${resultElement.display.value}"`);
 				} else {
 					resultList.push(JSON.stringify(resultElement));
 				}
