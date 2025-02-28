@@ -22,7 +22,7 @@ export class TonometryComponent extends LitElement {
 						<label class="label has-text-weight-bold">Tonometrie:</label>
 						<div class="control">
 							<input
-								class="date input is-small"
+								class="recordedDate input is-small"
 								type="datetime-local"
 								placeholder="Messzeitpunkt (Default: Jetzt)"
 								.value="${this.formData.recordedDate}"
@@ -30,7 +30,7 @@ export class TonometryComponent extends LitElement {
 						</div>
 						<div class="control">
 							<div class="select is-small">
-								<select class="method">
+								<select class="tonometryType">
 									${Object.entries(IOPMethod).map(
 										([key, value]) => html`
 											<option value="${key}" ?selected=${this.formData.tonometryType === value}>
@@ -50,24 +50,24 @@ export class TonometryComponent extends LitElement {
 									<label class="label">Rechtes Auge:</label>
 								</div>
 								<div class="field-body">
-									<div class="field has-addons">
+									<div class="field has-addons is-narrow">
 										<div class="control">
 											<input
 												class="pressure-right input is-small"
 												type="number"
-												.value="${this.formData.rightEye.pressure}"
+												placeholder="Tonometrie rechts"
 											/>
 										</div>
 										<p class="button is-static is-small">mmHg</p>
 									</div>
 									<div class="field ml-2">
-										<label class="checkbox"
-											><input
-												class="dropped-right"
+										<label class="checkbox">
+											<input
+												class="isDropped-right"
 												type="checkbox"
 												.value="${this.formData.rightEye.isDropped}"
 											/>
-											aufgetropft</label
+											Mydriasis</label
 										>
 									</div>
 								</div>
@@ -81,12 +81,12 @@ export class TonometryComponent extends LitElement {
 									<label class="label">linkes Auge:</label>
 								</div>
 								<div class="field-body">
-									<div class="field has-addons">
+									<div class="field has-addons is-narrow">
 										<div class="control">
 											<input
 												class="pressure-left input is-small"
 												type="number"
-												.value="${this.formData.leftEye.pressure}"
+												placeholder="Tonometrie links"
 											/>
 										</div>
 										<p class="button is-static is-small">mmHg</p>
@@ -94,11 +94,11 @@ export class TonometryComponent extends LitElement {
 									<div class="field ml-2">
 										<label class="checkbox"
 											><input
-												class="dropped-left"
+												class="isDropped-left"
 												type="checkbox"
 												.value="${this.formData.leftEye.isDropped}"
 											/>
-											aufgetropft</label
+											Mydriasis</label
 										>
 									</div>
 								</div>
@@ -114,15 +114,16 @@ export class TonometryComponent extends LitElement {
 	private getFormData(): TonometrieData {
 		return {
 			tonometryType:
-				(this.renderRoot.querySelector<HTMLSelectElement>(".method")?.value as IOPMethod) ||
+				(this.renderRoot.querySelector<HTMLSelectElement>(".tonometryType")?.value as IOPMethod) ||
 				this.formData.tonometryType,
-			recordedDate: this.renderRoot.querySelector<HTMLInputElement>(".date")?.value || this.formData.recordedDate,
+			recordedDate:
+				this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value || this.formData.recordedDate,
 			rightEye: {
 				pressure:
 					Number(this.renderRoot.querySelector<HTMLInputElement>(".pressure-right")?.value) ||
 					this.formData.rightEye.pressure,
 				isDropped:
-					this.renderRoot.querySelector<HTMLInputElement>(".dropped-right")?.checked ||
+					this.renderRoot.querySelector<HTMLInputElement>(".isDropped-right")?.checked ||
 					this.formData.rightEye.isDropped,
 			},
 			leftEye: {
@@ -130,7 +131,7 @@ export class TonometryComponent extends LitElement {
 					Number(this.renderRoot.querySelector<HTMLInputElement>(".pressure-left")?.value) ||
 					this.formData.leftEye.pressure,
 				isDropped:
-					this.renderRoot.querySelector<HTMLInputElement>(".dropped-left")?.checked ||
+					this.renderRoot.querySelector<HTMLInputElement>(".isDropped-left")?.checked ||
 					this.formData.leftEye.isDropped,
 			},
 		};

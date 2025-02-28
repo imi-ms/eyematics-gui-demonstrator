@@ -1,16 +1,61 @@
 import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
-import { IOPMethod, TonometrieData } from "./tonometryData.ts";
+import { VisusData, CorrectionMethod, TestDistance, Optotype } from "./VisusData.ts";
+
+const visusValues = [
+	"1,6",
+	"1,25",
+	"1,0",
+	"0,8",
+	"0,7",
+	"0,63",
+	"0,5",
+	"0,4",
+	"0,32",
+	"0,25",
+	"0,2",
+	"0,16",
+	"0,125",
+	"0,1",
+	"0,08",
+	"0,05",
+	"1/10",
+	"1/15",
+	"1/20",
+	"1/25",
+	"1/35",
+	"1/50",
+	"FZ",
+	"HBW",
+	"LS",
+	"NL",
+];
 
 @customElement("visus-component")
 export class VisusComponent extends LitElement {
 	@state()
-	private formData: TonometrieData = {
-		tonometryType: IOPMethod.Applanation,
+	private formData: VisusData = {
 		recordedDate: new Date().toISOString().slice(0, 16),
-		rightEye: { pressure: 18, isDropped: false },
-		leftEye: { pressure: 20, isDropped: false },
+		correctionMethod: CorrectionMethod.Glasses,
+		testDistance: TestDistance.Far,
+		optotype: Optotype.Landolt,
+		rightEye: {
+			lens: {
+				sphere: -1.0,
+				cylinder: -1.0,
+				axis: 70,
+			},
+			visus: "0,2",
+		},
+		leftEye: {
+			lens: {
+				sphere: 0.25,
+				cylinder: -0.75,
+				axis: 60,
+			},
+			visus: "FZ",
+		},
 	};
 
 	render() {
@@ -25,7 +70,7 @@ export class VisusComponent extends LitElement {
                         <div class="field is-grouped">
                             <div class="control">
                                     <input 
-                                            class="input is-small" 
+                                            class="recordedDate input is-small" 
                                             type="datetime-local" 
                                             placeholder="Messzeitpunkt (Default: Jetzt)"
                                             .value="${this.formData.recordedDate}"
@@ -33,32 +78,43 @@ export class VisusComponent extends LitElement {
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select>
-                                        <option>Ohne Korrektur (s.c.)</option>
-                                        <option>Subjektive Korrektur</option>
-                                        <option>Autorefraktometer Korrektur</option>
-                                        <option>Brille</option>
+                                    <select class="correctionMethod">
+                                    ${Object.entries(CorrectionMethod).map(
+										([key, value]) => html`
+											<option
+												value="${key}"
+												?selected=${this.formData.correctionMethod === value}
+											>
+												${value}
+											</option>
+										`
+									)}
                                     </select>
                                 </div>
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select>
-                                        <option>Fern</option>
-                                        <option>Intermediär</option>
-                                        <option>Nah</option>
-                                        <option>Unbekannt</option>
+                                    <select class="testDistance">
+                                    ${Object.entries(TestDistance).map(
+										([key, value]) => html`
+											<option value="${key}" ?selected=${this.formData.testDistance === value}>
+												${value}
+											</option>
+										`
+									)}
                                     </select>
                                 </div>
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select>
-                                        <option>Landolt</option>
-                                        <option>Snellen</option>
-                                        <option>Zahlen</option>
-                                        <option>Buchstaben</option>
-                                        <option>Bilder</option>
+                                    <select class="optotype">
+                                    ${Object.entries(Optotype).map(
+										([key, value]) => html`
+											<option value="${key}" ?selected=${this.formData.optotype === value}>
+												${value}
+											</option>
+										`
+									)}
                                     </select>
                                 </div>
                             </div>
@@ -71,45 +127,34 @@ export class VisusComponent extends LitElement {
                         <div class="box">
                             <div class="field-label">rechtes Auge</div>
                             <div class="inputs-inline">
-                                <input class="input is-small is-small-input" type="number" placeholder="sph" />
-                                <input class="input is-small is-small-input" type="number" placeholder="cyl" />
-                                <input class="input is-small is-small-input" type="number" placeholder="axis" />
+                                <input
+									class="sphere-right input is-small is-small-input"
+									type="number"
+									placeholder="sphere"
+								/>
+                                <input
+									class="cylinder-right input is-small is-small-input"
+									type="number"
+									placeholder="cylinder"
+								/>
+                                <input
+									class="axis-right input is-small is-small-input"
+									type="number"
+									placeholder="axis"
+								/>
                             </div>
                             <div class="inputs-inline">
                                 <div class="visus-input control">
                                     <div class="visus-input select is-small">
-                                        <select required>
+                                        <select class="visus-right" required>
                                             <option value="" disabled selected hidden>Visus</option>
-                                            <option>1,6</option>
-                                            <option>1,25</option>
-                                            <option>1,0</option>
-                                            <option>0,8</option>
-                                            <option>0,7</option>
-                                            <option>0,63</option>
-                                            <option>0,5</option>
-                                            <option>0,4</option>
-                                            <option>0,32</option>
-                                            <option>0,25</option>
-                                            <option>0,2</option>
-                                            <option>0,16</option>
-                                            <option>0,125</option>
-                                            <option>0,1</option>
-                                            <option>0,08</option>
-                                            <option>0,05</option>
-                                            <option>1/10</option>
-                                            <option>1/15</option>
-                                            <option>1/20</option>
-                                            <option>1/25</option>
-                                            <option>1/35</option>
-                                            <option>1/50</option>
-                                            <option>FZ</option>
-                                            <option>HBW</option>
-                                            <option>LS</option>
-                                            <option>NL</option>
+                                            ${visusValues.map(
+												(value) => html` <option value="${value}">${value}</option> `
+											)}
                                         </select>
                                     </div>
                                 </div>
-                                <label class="checkbox">
+								<label class="checkbox">
                                     <input type="checkbox" />
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
@@ -120,45 +165,34 @@ export class VisusComponent extends LitElement {
                         <div class="box">
                             <div class="field-label">linkes Auge</div>
                             <div class="inputs-inline">
-                                <input class="input is-small is-small-input" type="number" placeholder="sph" />
-                                <input class="input is-small is-small-input" type="number" placeholder="cyl" />
-                                <input class="input is-small is-small-input" type="number" placeholder="axis" />
+                                <input
+									class="sphere-left input is-small is-small-input"
+									type="number"
+									placeholder="sphere"
+								/>
+                                <input
+									class="cylinder-left input is-small is-small-input"
+									type="number"
+									placeholder="cylinder"
+								/>
+                                <input
+									class="axis-left input is-small is-small-input"
+									type="number"
+									placeholder="axis"
+								/>
                             </div>
                             <div class="inputs-inline">
                                 <div class="visus-input control">
                                     <div class="visus-input select is-small">
-                                        <select required>
+                                        <select class="visus-left" required>
                                             <option value="" disabled selected hidden>Visus</option>
-                                            <option>1,6</option>
-                                            <option>1,25</option>
-                                            <option>1,0</option>
-                                            <option>0,8</option>
-                                            <option>0,7</option>
-                                            <option>0,63</option>
-                                            <option>0,5</option>
-                                            <option>0,4</option>
-                                            <option>0,32</option>
-                                            <option>0,25</option>
-                                            <option>0,2</option>
-                                            <option>0,16</option>
-                                            <option>0,125</option>
-                                            <option>0,1</option>
-                                            <option>0,08</option>
-                                            <option>0,05</option>
-                                            <option>1/10</option>
-                                            <option>1/15</option>
-                                            <option>1/20</option>
-                                            <option>1/25</option>
-                                            <option>1/35</option>
-                                            <option>1/50</option>
-                                            <option>FZ</option>
-                                            <option>HBW</option>
-                                            <option>LS</option>
-                                            <option>NL</option>
+                                            ${visusValues.map(
+												(value) => html` <option value="${value}">${value}</option> `
+											)}
                                         </select>
                                     </div>
                                 </div>
-                                <label class="checkbox">
+								<label class="checkbox">
                                     <input type="checkbox" />
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
@@ -170,8 +204,52 @@ export class VisusComponent extends LitElement {
         `;
 	}
 
-	private getFormData(): TonometrieData {
-		return this.formData;
+	private getFormData(): VisusData {
+		return {
+			recordedDate:
+				this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value || this.formData.recordedDate,
+			correctionMethod:
+				(this.renderRoot.querySelector<HTMLSelectElement>(".correctionMethod")?.value as CorrectionMethod) ||
+				this.formData.correctionMethod,
+			testDistance:
+				(this.renderRoot.querySelector<HTMLSelectElement>(".testDistance")?.value as TestDistance) ||
+				this.formData.testDistance,
+			optotype:
+				(this.renderRoot.querySelector<HTMLSelectElement>(".optotype")?.value as Optotype) ||
+				this.formData.optotype,
+			rightEye: {
+				lens: {
+					sphere:
+						Number(this.renderRoot.querySelector<HTMLInputElement>(".sphere-right")?.value) ||
+						this.formData.rightEye.lens.sphere,
+					cylinder:
+						Number(this.renderRoot.querySelector<HTMLInputElement>(".cylinder-right")?.value) ||
+						this.formData.rightEye.lens.cylinder,
+					axis:
+						Number(this.renderRoot.querySelector<HTMLInputElement>(".axis-right")?.value) ||
+						this.formData.rightEye.lens.axis,
+				},
+				visus:
+					this.renderRoot.querySelector<HTMLSelectElement>(".visus-right")?.value ||
+					this.formData.rightEye.visus,
+			},
+			leftEye: {
+				lens: {
+					sphere:
+						Number(this.renderRoot.querySelector<HTMLInputElement>(".sphere-left")?.value) ||
+						this.formData.leftEye.lens.sphere,
+					cylinder:
+						Number(this.renderRoot.querySelector<HTMLInputElement>(".cylinder-left")?.value) ||
+						this.formData.leftEye.lens.cylinder,
+					axis:
+						Number(this.renderRoot.querySelector<HTMLInputElement>(".axis-left")?.value) ||
+						this.formData.leftEye.lens.axis,
+				},
+				visus:
+					this.renderRoot.querySelector<HTMLSelectElement>(".visus-left")?.value ||
+					this.formData.leftEye.visus,
+			},
+		};
 	}
 
 	private _handleSubmit(_: Event) {

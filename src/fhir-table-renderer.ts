@@ -53,6 +53,7 @@ export class FhirTableRenderer<T> extends LitElement {
 		function extracted<T>(map: ColumnConfig<T>, columnName: string, item: T) {
 			let functionOrString = map[columnName];
 			let result;
+
 			if (typeof functionOrString === "string") {
 				result = evaluate(item, functionOrString as string);
 			} else if (functionOrString instanceof Function) {

@@ -1,15 +1,15 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import litLogo from "./assets/lit.svg";
-import viteLogo from "/vite.svg";
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { classMap } from "lit/directives/class-map.js";
 import { TonometrieData } from "./tonometryData.ts";
 import { TonometryComponent } from "./tonometry-component.ts";
 import { ColumnConfig, FhirTableRenderer } from "./fhir-table-renderer.ts";
-import { uiModel2Fhir } from "./tonometry-to-fhir.ts";
+import { tonometry2Fhir } from "./tonometry-to-fhir.ts";
+import { visus2Fhir } from "./visus-to-fhir.ts";
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { VisusComponent } from "./visus-component.ts";
+import { VisusData } from "./VisusData.ts";
 
 @customElement("my-element")
 export class MyElement extends LitElement {
@@ -18,6 +18,8 @@ export class MyElement extends LitElement {
 
 	@state()
 	private tonometryData: Observation[] = [];
+
+	@state()
 	private visusData: Observation[] = [];
 
 	private columnMapTonometry: ColumnConfig<TonometrieData> = {
@@ -29,10 +31,16 @@ export class MyElement extends LitElement {
 		Einheit: "Observation.valueQuantity.unit",
 	};
 
-	private columnMapVisus: ColumnConfig<TonometrieData> = {
+	private columnMapVisus: ColumnConfig<VisusData> = {
 		Messzeitpunkt: "Observation.effectiveDateTime",
 		Seitigkeit: "Observation.bodySite.coding",
 		Code: "Observation.code.coding",
+		Visus: "Observation.value",
+		Methode: "Observation.method.coding",
+		"Korrektion Link": "Observation.component.where(id='Correction-left')",
+		"Korrektion Rechts": "Observation.component.where(id='Correction-right')",
+		Testentfernung: "Observation.component.where(id='Test-Distance').value",
+		Optotyp: "Observation.component.where(id='Optotype-used').value",
 	};
 
 	render() {
@@ -66,12 +74,10 @@ export class MyElement extends LitElement {
 				: html`<visus-component @add-observation="${this._handleAdd}"></visus-component>`}
 			${this.activeTab == "tonometryTab"
 				? html`<fhir-table-renderer
-						id="table"
 						.columnMap="${this.columnMapTonometry}"
 						.data="${this.tonometryData}"
 				  ></fhir-table-renderer>`
 				: html`<fhir-table-renderer
-						id="table"
 						.columnMap="${this.columnMapVisus}"
 						.data="${this.visusData}"
 				  ></fhir-table-renderer>`}
@@ -82,19 +88,13 @@ export class MyElement extends LitElement {
 		this.activeTab = (e.currentTarget as Element).id;
 	}
 
-	private _handleAdd(e: CustomEvent<TonometrieData>) {
-		this.tonometryData = [...this.tonometryData, ...uiModel2Fhir(e.detail)];
+	private _handleAdd(e: CustomEvent) {
+		this.activeTab == "tonometryTab"
+			? (this.tonometryData = [...this.tonometryData, ...tonometry2Fhir(e.detail)])
+			: (this.visusData = [...this.visusData, ...visus2Fhir(e.detail)]);
 	}
 
 	private _handleSubmit(e: Event) {}
 
 	static styles = [bulmaStyles];
-}
-
-declare global {
-	interface HTMLElementTagNameMap {
-		"my-element": MyElement;
-		"tonometry-component": TonometryComponent;
-		"fhir-table-renderer": FhirTableRenderer<TonometrieData>;
-	}
 }
