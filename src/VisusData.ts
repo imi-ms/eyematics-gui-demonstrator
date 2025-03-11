@@ -2,7 +2,6 @@ export enum CorrectionMethod {
 	Uncorrected = "Uncorrected visual acuity",
 	Glasses = "Eye glasses, device",
 	Lenses = "Contact lenses, device",
-	Pinhole = "Pinhole Occluder",
 	TLAuto = "trial-lenses-autorefraction",
 	TLNoCycloplegia = "trial-lenses-manifest-without-cycloplegia",
 	TLCycloplegia = "trial-lenses-manifest-with-cycloplegia",

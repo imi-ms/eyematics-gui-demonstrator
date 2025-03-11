@@ -14,7 +14,6 @@ const CorrectionMethod2Fhir = {
 	Uncorrected: [snomed("420050001", "Uncorrected visual acuity")],
 	Glasses: [snomed("50121007", "Eye glasses, device")],
 	Lenses: [snomed("57368009", "Contact lenses, device")],
-	Pinhole: [snomed("257492003", "Pinhole Occluder")],
 	TLAuto: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/vs-va-correction-methods",
@@ -255,10 +254,7 @@ function getCorrectionMethod(
 	let position = leftEye ? [loinc("29074-2", "Left Eye position")] : [loinc("29073-4", "Right Eye position")];
 
 	// uncorrected
-	if (
-		CorrectionMethod[correctionMethod] === CorrectionMethod.Uncorrected ||
-		CorrectionMethod[correctionMethod] === CorrectionMethod.Pinhole
-	) {
+	if (CorrectionMethod[correctionMethod] === CorrectionMethod.Uncorrected) {
 		return {
 			id: `Correction-${bodySite}-eye`,
 			code: {
