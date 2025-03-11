@@ -87,7 +87,9 @@ export class FhirTableRenderer<T> extends LitElement {
 				<thead>
 					<tr>
 						<th></th>
-						${columnNames.map((columnName) => html` <th>${columnName}</th>`)}
+						${columnNames.map(
+							(columnName) => html` <th title="${this.columnMap[columnName]}">${columnName}</th>`
+						)}
 					</tr>
 				</thead>
 				<tbody>
