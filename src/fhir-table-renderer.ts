@@ -68,12 +68,21 @@ export class FhirTableRenderer<T> extends LitElement {
 					resultList.push(resultElement);
 				} else if (resultElement.value) {
 					resultList.push(resultElement.value);
+				} else if (resultElement.numerator && resultElement.denominator) {
+					resultList.push(`${resultElement.numerator.value}/${resultElement.denominator.value}`);
 				} else if (resultElement.system && resultElement.system.value === "http://snomed.info/sct") {
 					resultList.push(`snomed#${resultElement.code.value} "${resultElement.display.value}"`);
 				} else if (resultElement.system && resultElement.system.value === "http://loinc.org") {
 					resultList.push(`loinc#${resultElement.code.value} "${resultElement.display.value}"`);
 				} else if (resultElement.system) {
 					resultList.push(`${resultElement.code.value} "${resultElement.display.value}"`);
+				} else if (
+					(resultElement.url =
+						"https://larfuma.github.io/fhir-eyecare-ig/StructureDefinition/LensDuringVATestSpecification")
+				) {
+					resultList.push(
+						`(sphere: ${resultElement.extension[1].value}, cylinder: ${resultElement.extension[2].value}, axis: ${resultElement.extension[3].value})`
+					);
 				} else {
 					resultList.push(JSON.stringify(resultElement));
 				}

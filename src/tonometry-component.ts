@@ -7,13 +7,21 @@ import { IOPMethod, TonometrieData } from "./tonometryData.ts";
 export class TonometryComponent extends LitElement {
 	@state()
 	private formData: TonometrieData = {
-		tonometryType: IOPMethod.Applanation,
+		iopMethod: IOPMethod.Applanation,
 		recordedDate: new Date().toISOString().slice(0, 16),
-		rightEye: { pressure: 18, isDropped: false },
-		leftEye: { pressure: 20, isDropped: false },
+		rightEye: { pressure: null, mydriasis: false },
+		leftEye: { pressure: null, mydriasis: false },
 	};
 
+	@state()
+	private validInput: boolean = false;
+
+	@state()
+	private validationMessage: string = "";
+
 	render() {
+		this._validateInput();
+
 		return html`
 			<section class="section">
 				<div class="container">
@@ -26,14 +34,15 @@ export class TonometryComponent extends LitElement {
 								type="datetime-local"
 								placeholder="Messzeitpunkt (Default: Jetzt)"
 								.value="${this.formData.recordedDate}"
+								@input="${this._updateFormData}"
 							/>
 						</div>
 						<div class="control">
 							<div class="select is-small">
-								<select class="tonometryType">
+								<select class="iopMethod" @change="${this._updateFormData}">
 									${Object.entries(IOPMethod).map(
 										([key, value]) => html`
-											<option value="${key}" ?selected=${this.formData.tonometryType === value}>
+											<option value="${key}" ?selected=${this.formData.iopMethod === value}>
 												${value}
 											</option>
 										`
@@ -56,6 +65,8 @@ export class TonometryComponent extends LitElement {
 												class="pressure-right input is-small"
 												type="number"
 												placeholder="Tonometrie rechts"
+												min="0"
+												@input="${this._updateFormData}"
 											/>
 										</div>
 										<p class="button is-static is-small">mmHg</p>
@@ -63,9 +74,10 @@ export class TonometryComponent extends LitElement {
 									<div class="field ml-2">
 										<label class="checkbox">
 											<input
-												class="isDropped-right"
+												class="mydriasis-right"
 												type="checkbox"
-												.value="${this.formData.rightEye.isDropped}"
+												.value="${this.formData.rightEye.mydriasis}"
+												@input="${this._updateFormData}"
 											/>
 											Mydriasis</label
 										>
@@ -87,6 +99,8 @@ export class TonometryComponent extends LitElement {
 												class="pressure-left input is-small"
 												type="number"
 												placeholder="Tonometrie links"
+												min="0"
+												@input="${this._updateFormData}"
 											/>
 										</div>
 										<p class="button is-static is-small">mmHg</p>
@@ -94,9 +108,10 @@ export class TonometryComponent extends LitElement {
 									<div class="field ml-2">
 										<label class="checkbox"
 											><input
-												class="isDropped-left"
+												class="mydriasis-left"
 												type="checkbox"
-												.value="${this.formData.leftEye.isDropped}"
+												.value="${this.formData.leftEye.mydriasis}"
+												@input="${this._updateFormData}"
 											/>
 											Mydriasis</label
 										>
@@ -105,41 +120,57 @@ export class TonometryComponent extends LitElement {
 							</div>
 						</div>
 					</div>
-					<button class="button is-primary" @click="${this._handleSubmit}">Erfassen</button>
+					<button
+						class="submit button is-primary"
+						?disabled="${!this.validInput}"
+						title="${this.validationMessage}"
+						@click="${this._handleSubmit}"
+					>
+						Erfassen
+					</button>
 				</div>
 			</section>
 		`;
 	}
 
-	private getFormData(): TonometrieData {
-		return {
-			tonometryType:
-				(this.renderRoot.querySelector<HTMLSelectElement>(".tonometryType")?.value as IOPMethod) ||
-				this.formData.tonometryType,
-			recordedDate:
-				this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value || this.formData.recordedDate,
+	private _updateFormData() {
+		this.formData = {
+			iopMethod: IOPMethod[this.renderRoot.querySelector<HTMLSelectElement>(".iopMethod")?.value],
+			recordedDate: this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value,
 			rightEye: {
-				pressure:
-					Number(this.renderRoot.querySelector<HTMLInputElement>(".pressure-right")?.value) ||
-					this.formData.rightEye.pressure,
-				isDropped:
-					this.renderRoot.querySelector<HTMLInputElement>(".isDropped-right")?.checked ||
-					this.formData.rightEye.isDropped,
+				pressure: getNumberOrNull(this.renderRoot, ".pressure-right"),
+				mydriasis: this.renderRoot.querySelector<HTMLInputElement>(".mydriasis-right")?.checked,
 			},
 			leftEye: {
-				pressure:
-					Number(this.renderRoot.querySelector<HTMLInputElement>(".pressure-left")?.value) ||
-					this.formData.leftEye.pressure,
-				isDropped:
-					this.renderRoot.querySelector<HTMLInputElement>(".isDropped-left")?.checked ||
-					this.formData.leftEye.isDropped,
+				pressure: getNumberOrNull(this.renderRoot, ".pressure-left"),
+				mydriasis: this.renderRoot.querySelector<HTMLInputElement>(".mydriasis-left")?.checked,
 			},
 		};
 	}
 
+	private _validateInput() {
+		this.validInput = true;
+		this.validationMessage = "";
+
+		let pressureData: [number, string][] = [
+			[this.formData.leftEye.pressure, "linke"],
+			[this.formData.rightEye.pressure, "rechte"],
+		];
+
+		for (let [pressure, label] of pressureData) {
+			if (pressure == null) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen Augeninnendruck für das ${label} Auge an.\n`;
+			} else if (pressure < 0) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen positiven Augeninnendruck für das ${label} Auge an.\n`;
+			}
+		}
+	}
+
 	private _handleSubmit(_: Event) {
 		const event = new CustomEvent("add-observation", {
-			detail: this.getFormData(),
+			detail: this.formData,
 			bubbles: false, // Allow the event to bubble up
 			composed: true, // Allow the event to cross shadow DOM boundaries
 		});
@@ -148,4 +179,8 @@ export class TonometryComponent extends LitElement {
 	}
 
 	static styles = [bulmaStyles];
+}
+
+export function getNumberOrNull(root: HTMLElement | DocumentFragment, className: string) {
+	return ((value) => (value === "" ? null : Number(value)))(root.querySelector<HTMLInputElement>(className)?.value);
 }

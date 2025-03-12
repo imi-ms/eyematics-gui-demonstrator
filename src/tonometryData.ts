@@ -21,14 +21,14 @@ export enum IOPMethod {
 }
 
 export interface TonometrieData {
-	tonometryType: IOPMethod; // tonometry method
-	recordedDate: string; // datetime
+	iopMethod: IOPMethod;
+	recordedDate: string;
 	rightEye: {
-		pressure: number; // in mmHG
-		isDropped: boolean; // Checkbox for "aufgetropft"
+		pressure: number;
+		mydriasis: boolean;
 	};
 	leftEye: {
-		pressure: number; // Left eye pressure
-		isDropped: boolean; // Checkbox for "aufgetropft"
+		pressure: number;
+		mydriasis: boolean;
 	};
 }

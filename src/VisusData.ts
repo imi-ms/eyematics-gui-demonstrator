@@ -51,6 +51,7 @@ export interface VisusData {
 			axis: number;
 		};
 		visus: string;
+		pinhole: boolean;
 	};
 	leftEye: {
 		lens: {
@@ -59,5 +60,6 @@ export interface VisusData {
 			axis: number;
 		};
 		visus: string;
+		pinhole: boolean;
 	};
 }

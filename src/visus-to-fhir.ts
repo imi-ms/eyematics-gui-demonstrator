@@ -1,5 +1,5 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
-import { CorrectionMethod, Optotype, VisusData } from "./VisusData.ts";
+import { CorrectionMethod, Optotype, TestDistance, VisusData } from "./VisusData.ts";
 import { snomed, loinc } from "./tonometry-to-fhir.ts";
 import { ObservationArgs, ObservationComponentArgs } from "@fhir-typescript/r4b-core/dist/fhir";
 
@@ -11,38 +11,38 @@ const VisusCategories = {
 };
 
 const CorrectionMethod2Fhir = {
-	Uncorrected: [snomed("420050001", "Uncorrected visual acuity")],
-	Glasses: [snomed("50121007", "Eye glasses, device")],
-	Lenses: [snomed("57368009", "Contact lenses, device")],
-	TLAuto: [
+	[CorrectionMethod.Uncorrected]: [snomed("420050001", "Uncorrected visual acuity")],
+	[CorrectionMethod.Glasses]: [snomed("50121007", "Eye glasses, device")],
+	[CorrectionMethod.Lenses]: [snomed("57368009", "Contact lenses, device")],
+	[CorrectionMethod.TLAuto]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/vs-va-correction-methods",
 			code: "trial-lenses-autorefraction",
 			display: "",
 		},
 	],
-	TLNoCycloplegia: [
+	[CorrectionMethod.TLNoCycloplegia]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/vs-va-correction-methods",
 			code: "trial-lenses-manifest-without-cycloplegia",
 			display: "",
 		},
 	],
-	TLCycloplegia: [
+	[CorrectionMethod.TLCycloplegia]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/vs-va-correction-methods",
 			code: "trial-lenses-manifest-with-cycloplegia",
 			display: "",
 		},
 	],
-	TLRetinoscopy: [
+	[CorrectionMethod.TLRetinoscopy]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/vs-va-correction-methods",
 			code: "trial-lenses-retinoscopy",
 			display: "",
 		},
 	],
-	TLNoOrigin: [
+	[CorrectionMethod.TLNoOrigin]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/vs-va-correction-methods",
 			code: "trial-lenses-unspecified-origin",
@@ -52,49 +52,51 @@ const CorrectionMethod2Fhir = {
 };
 
 const TestDistance2Fhir = {
-	Near: [loinc("LA32578-9", "Near")],
-	Far: [loinc("LA32577-1", "Far")],
-	Intermediate: [loinc("LA16550-8", "Intermediate")],
+	[TestDistance.Near]: [loinc("LA32578-9", "Near")],
+	[TestDistance.Far]: [loinc("LA32577-1", "Far")],
+	[TestDistance.Intermediate]: [loinc("LA16550-8", "Intermediate")],
 	// NotApplicable: [loinc("LA4720-4", "Not applicable")],
 	// Unknown: [loinc("LA13420-7", "Unknown/Indeterminate")],
 };
 
 const Optotype2Fhir = {
-	Landolt: [
+	[Optotype.Landolt]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/va-optotypes",
 			code: "LandoltC",
-			display: "", // "Landolt C",
+			display: "Landolt C",
 		},
 	],
-	Sjogren: [
+	[Optotype.Sjogren]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/va-optotypes",
 			code: "Sjogren",
-			display: "", // "Sjogren's Hand Test",
+			display: "Sjogren's Hand Test",
 		},
 	],
-	Lea: [
+	[Optotype.Lea]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/va-optotypes",
 			code: "Lea",
-			display: "", // "Lea Symbol Test",
+			display: "Lea Symbol Test",
 		},
 	],
-	ETest: [snomed("400911007", "E test (procedure)")],
-	Kay: [snomed("252982005", "Kay picture test")],
-	Cambrige: [snomed("252977003", "Cambridge crowded letter charts")],
-	Sonsken: [snomed("252976007", "Sonsken charts")],
-	Sheridan: [snomed("252978008", "Sheridan Gardiner test")],
-	Stycar: [snomed("252884005", "Stycar vision test")],
-	Cardiff: [snomed("285805006", "Cardiff acuity cards")],
-	Teller: [snomed("285803004", "Teller acuity cards"), loinc("LA25494-8", "Teller")],
-	Keeler: [snomed("285804005", "Keeler acuity cards")],
-	Chart: [snomed("400914004", "Early Treatment of Diabetic Retinopathy Study visual acuity chart (physical object)")],
-	Allen: [loinc("LA25495-5", "Allen figure")],
-	HOTV: [loinc("LA25496-3", "HOTV")],
-	Numbers: [loinc("LA25497-1", "Numbers")],
-	Snellen: [loinc("LA25498-9", "Snellen")],
+	[Optotype.ETest]: [snomed("400911007", "E test (procedure)")],
+	[Optotype.Kay]: [snomed("252982005", "Kay picture test")],
+	[Optotype.Cambrige]: [snomed("252977003", "Cambridge crowded letter charts")],
+	[Optotype.Sonsken]: [snomed("252976007", "Sonsken charts")],
+	[Optotype.Sheridan]: [snomed("252978008", "Sheridan Gardiner test")],
+	[Optotype.Stycar]: [snomed("252884005", "Stycar vision test")],
+	[Optotype.Cardiff]: [snomed("285805006", "Cardiff acuity cards")],
+	[Optotype.Teller]: [snomed("285803004", "Teller acuity cards"), loinc("LA25494-8", "Teller")],
+	[Optotype.Keeler]: [snomed("285804005", "Keeler acuity cards")],
+	[Optotype.Chart]: [
+		snomed("400914004", "Early Treatment of Diabetic Retinopathy Study visual acuity chart (physical object)"),
+	],
+	[Optotype.Allen]: [loinc("LA25495-5", "Allen figure")],
+	[Optotype.HOTV]: [loinc("LA25496-3", "HOTV")],
+	[Optotype.Numbers]: [loinc("LA25497-1", "Numbers")],
+	[Optotype.Snellen]: [loinc("LA25498-9", "Snellen")],
 	// NotRecorded: [snomed("1220561009", "Not recorded")],
 	// Unknown: [snomed("261665006", "Unknown")],
 };
@@ -117,7 +119,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 		component: [
 			getCorrectionMethod(data.correctionMethod, true, data.leftEye.lens),
 			{
-				id: "Test-Distance",
 				code: {
 					coding: [snomed("252124009", "Test distance")],
 				},
@@ -126,7 +127,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 				},
 			},
 			{
-				id: "Optotype-used",
 				code: {
 					coding: [
 						{
@@ -160,7 +160,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 		component: [
 			getCorrectionMethod(data.correctionMethod, false, data.rightEye.lens),
 			{
-				id: "Test-Distance",
 				code: {
 					coding: [snomed("252124009", "Test distance")],
 				},
@@ -169,7 +168,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 				},
 			},
 			{
-				id: "Optotype-used",
 				code: {
 					coding: [
 						{
@@ -186,7 +184,7 @@ export function visus2Fhir(data: VisusData): Observation[] {
 		],
 	});
 
-	return [left.toJSON(), right.toJSON()];
+	return [left, right];
 }
 
 function getVisusValue(visus: string): Partial<ObservationArgs> {
@@ -250,13 +248,11 @@ function getCorrectionMethod(
 	leftEye: boolean,
 	lens?: { sphere: number; cylinder: number; axis: number }
 ): ObservationComponentArgs {
-	let bodySite = leftEye ? "left" : "right";
 	let position = leftEye ? [loinc("29074-2", "Left Eye position")] : [loinc("29073-4", "Right Eye position")];
 
 	// uncorrected
-	if (CorrectionMethod[correctionMethod] === CorrectionMethod.Uncorrected) {
+	if (correctionMethod === CorrectionMethod.Uncorrected) {
 		return {
-			id: `Correction-${bodySite}-eye`,
 			code: {
 				coding: position,
 			},
@@ -268,7 +264,6 @@ function getCorrectionMethod(
 
 	// corrected with extension for lenses
 	return {
-		id: `Correction-${bodySite}-eye`,
 		extension: [
 			{
 				extension: [

@@ -23,24 +23,24 @@ export class MyElement extends LitElement {
 	private visusData: Observation[] = [];
 
 	private columnMapTonometry: ColumnConfig<TonometrieData> = {
-		Messzeitpunkt: "Observation.effectiveDateTime",
+		Messzeitpunkt: "Observation.effective",
 		Seitigkeit: "Observation.bodySite.coding",
 		Code: "Observation.code.coding",
 		"Tonometrie Typ": "Observation.method.coding",
-		Augeninnendruck: "Observation.valueQuantity.value",
-		Einheit: "Observation.valueQuantity.unit",
+		Augeninnendruck: "Observation.value",
+		Einheit: "Observation.value.unit",
 	};
 
 	private columnMapVisus: ColumnConfig<VisusData> = {
-		Messzeitpunkt: "Observation.effectiveDateTime",
+		Messzeitpunkt: "Observation.effective",
 		Seitigkeit: "Observation.bodySite.coding",
 		Code: "Observation.code.coding",
-		Visus: "Observation.value",
+		Visus: "iif(Observation.value.coding.exists(), Observation.value.coding, Observation.value)",
 		Methode: "Observation.method.coding",
-		"Korrektion Link": "Observation.component.where(id='Correction-left')",
-		"Korrektion Rechts": "Observation.component.where(id='Correction-right')",
-		Testentfernung: "Observation.component.where(id='Test-Distance').value",
-		Optotyp: "Observation.component.where(id='Optotype-used').value",
+		Korrektion:
+			"Observation.component.where(code.coding.code.value in ('29073-4' | '29074-2')).select(value.coding | extension)",
+		Testentfernung: "Observation.component.where(code.coding.code.value='252124009').value.coding",
+		Optotyp: "Observation.component.where(code.coding.code.value='VS_VA_Optotypes').value.coding",
 	};
 
 	render() {

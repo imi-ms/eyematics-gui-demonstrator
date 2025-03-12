@@ -2,6 +2,7 @@ import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { VisusData, CorrectionMethod, TestDistance, Optotype } from "./VisusData.ts";
+import { getNumberOrNull } from "./tonometry-component.ts";
 
 const visusValues = [
 	"1,6",
@@ -42,23 +43,33 @@ export class VisusComponent extends LitElement {
 		optotype: Optotype.Landolt,
 		rightEye: {
 			lens: {
-				sphere: -1.0,
-				cylinder: -1.0,
-				axis: 70,
+				sphere: null,
+				cylinder: null,
+				axis: null,
 			},
-			visus: "0,2",
+			visus: "",
+			pinhole: false,
 		},
 		leftEye: {
 			lens: {
-				sphere: 0.25,
-				cylinder: -0.75,
-				axis: 60,
+				sphere: null,
+				cylinder: null,
+				axis: null,
 			},
-			visus: "FZ",
+			visus: "",
+			pinhole: false,
 		},
 	};
 
+	@state()
+	private validInput: boolean = false;
+
+	@state()
+	private validationMessage: string = "";
+
 	render() {
+		this._validateInput();
+
 		return html`
             <section class="section visus-container">
                 <div class="container">
@@ -74,11 +85,12 @@ export class VisusComponent extends LitElement {
                                             type="datetime-local" 
                                             placeholder="Messzeitpunkt (Default: Jetzt)"
                                             .value="${this.formData.recordedDate}"
-                                    >
+											@input="${this._updateFormData}"
+                                    />
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select class="correctionMethod">
+                                    <select class="correctionMethod" @change="${this._updateFormData}">
                                     ${Object.entries(CorrectionMethod).map(
 										([key, value]) => html`
 											<option
@@ -94,7 +106,7 @@ export class VisusComponent extends LitElement {
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select class="testDistance">
+                                    <select class="testDistance" @change="${this._updateFormData}">
                                     ${Object.entries(TestDistance).map(
 										([key, value]) => html`
 											<option value="${key}" ?selected=${this.formData.testDistance === value}>
@@ -107,7 +119,7 @@ export class VisusComponent extends LitElement {
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select class="optotype">
+                                    <select class="optotype" @change="${this._updateFormData}">
                                     ${Object.entries(Optotype).map(
 										([key, value]) => html`
 											<option value="${key}" ?selected=${this.formData.optotype === value}>
@@ -131,22 +143,27 @@ export class VisusComponent extends LitElement {
 									class="sphere-right input is-small is-small-input"
 									type="number"
 									placeholder="sphere"
+									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="cylinder-right input is-small is-small-input"
 									type="number"
 									placeholder="cylinder"
+									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="axis-right input is-small is-small-input"
 									type="number"
 									placeholder="axis"
+									min="0"
+									max="180"
+									@input="${this._updateFormData}"
 								/>
                             </div>
                             <div class="inputs-inline">
                                 <div class="visus-input control">
                                     <div class="visus-input select is-small">
-                                        <select class="visus-right" required>
+                                        <select class="visus-right" required @change="${this._updateFormData}">
                                             <option value="" disabled selected hidden>Visus</option>
                                             ${visusValues.map(
 												(value) => html` <option value="${value}">${value}</option> `
@@ -155,7 +172,7 @@ export class VisusComponent extends LitElement {
                                     </div>
                                 </div>
 								<label class="checkbox">
-                                    <input type="checkbox" />
+                                    <input class="pinhole-right" type="checkbox" @input="${this._updateFormData}"/>
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
                             </div>
@@ -169,22 +186,27 @@ export class VisusComponent extends LitElement {
 									class="sphere-left input is-small is-small-input"
 									type="number"
 									placeholder="sphere"
+									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="cylinder-left input is-small is-small-input"
 									type="number"
 									placeholder="cylinder"
+									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="axis-left input is-small is-small-input"
 									type="number"
 									placeholder="axis"
+									min="0"
+									max="180"
+									@input="${this._updateFormData}"
 								/>
                             </div>
                             <div class="inputs-inline">
                                 <div class="visus-input control">
                                     <div class="visus-input select is-small">
-                                        <select class="visus-left" required>
+                                        <select class="visus-left" required @change="${this._updateFormData}">
                                             <option value="" disabled selected hidden>Visus</option>
                                             ${visusValues.map(
 												(value) => html` <option value="${value}">${value}</option> `
@@ -193,68 +215,101 @@ export class VisusComponent extends LitElement {
                                     </div>
                                 </div>
 								<label class="checkbox">
-                                    <input type="checkbox" />
+                                    <input class="pinhole-left" type="checkbox" @input="${this._updateFormData}"/>
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <button class="button is-primary" @click="${this._handleSubmit}">Erfassen</button>
+                    <button
+						class="submit button is-primary"
+						?disabled="${!this.validInput}"
+						title="${this.validationMessage}"
+						@click="${this._handleSubmit}"
+					>
+						Erfassen
+					</button>
             </section>
         `;
 	}
 
-	private getFormData(): VisusData {
-		return {
-			recordedDate:
-				this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value || this.formData.recordedDate,
+	private _updateFormData() {
+		this.formData = {
+			recordedDate: this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value,
 			correctionMethod:
-				(this.renderRoot.querySelector<HTMLSelectElement>(".correctionMethod")?.value as CorrectionMethod) ||
-				this.formData.correctionMethod,
-			testDistance:
-				(this.renderRoot.querySelector<HTMLSelectElement>(".testDistance")?.value as TestDistance) ||
-				this.formData.testDistance,
-			optotype:
-				(this.renderRoot.querySelector<HTMLSelectElement>(".optotype")?.value as Optotype) ||
-				this.formData.optotype,
+				CorrectionMethod[this.renderRoot.querySelector<HTMLSelectElement>(".correctionMethod")?.value],
+			testDistance: TestDistance[this.renderRoot.querySelector<HTMLSelectElement>(".testDistance")?.value],
+			optotype: Optotype[this.renderRoot.querySelector<HTMLSelectElement>(".optotype")?.value],
 			rightEye: {
 				lens: {
-					sphere:
-						Number(this.renderRoot.querySelector<HTMLInputElement>(".sphere-right")?.value) ||
-						this.formData.rightEye.lens.sphere,
-					cylinder:
-						Number(this.renderRoot.querySelector<HTMLInputElement>(".cylinder-right")?.value) ||
-						this.formData.rightEye.lens.cylinder,
-					axis:
-						Number(this.renderRoot.querySelector<HTMLInputElement>(".axis-right")?.value) ||
-						this.formData.rightEye.lens.axis,
+					sphere: getNumberOrNull(this.renderRoot, ".sphere-right"),
+					cylinder: getNumberOrNull(this.renderRoot, ".cylinder-right"),
+					axis: getNumberOrNull(this.renderRoot, ".axis-right"),
 				},
-				visus:
-					this.renderRoot.querySelector<HTMLSelectElement>(".visus-right")?.value ||
-					this.formData.rightEye.visus,
+				visus: this.renderRoot.querySelector<HTMLSelectElement>(".visus-right")?.value,
+				pinhole: this.renderRoot.querySelector<HTMLInputElement>(".pinhole-right")?.checked,
 			},
 			leftEye: {
 				lens: {
-					sphere:
-						Number(this.renderRoot.querySelector<HTMLInputElement>(".sphere-left")?.value) ||
-						this.formData.leftEye.lens.sphere,
-					cylinder:
-						Number(this.renderRoot.querySelector<HTMLInputElement>(".cylinder-left")?.value) ||
-						this.formData.leftEye.lens.cylinder,
-					axis:
-						Number(this.renderRoot.querySelector<HTMLInputElement>(".axis-left")?.value) ||
-						this.formData.leftEye.lens.axis,
+					sphere: getNumberOrNull(this.renderRoot, ".sphere-left"),
+					cylinder: getNumberOrNull(this.renderRoot, ".cylinder-left"),
+					axis: getNumberOrNull(this.renderRoot, ".axis-left"),
 				},
-				visus:
-					this.renderRoot.querySelector<HTMLSelectElement>(".visus-left")?.value ||
-					this.formData.leftEye.visus,
+				visus: this.renderRoot.querySelector<HTMLSelectElement>(".visus-left")?.value,
+				pinhole: this.renderRoot.querySelector<HTMLInputElement>(".pinhole-left")?.checked,
 			},
 		};
 	}
 
+	private _validateInput() {
+		this.validInput = true;
+		this.validationMessage = "";
+
+		let visusData: [string, string][] = [
+			[this.formData.leftEye.visus, "linke"],
+			[this.formData.rightEye.visus, "rechte"],
+		];
+
+		for (let [visus, label] of visusData) {
+			if (visus === "") {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen Visuswert für das ${label} Auge an.\n`;
+			}
+		}
+
+		if (this.formData.correctionMethod === CorrectionMethod.Uncorrected) {
+			return;
+		}
+
+		let lensData: [{ sphere: number; cylinder: number; axis: number }, string][] = [
+			[this.formData.leftEye.lens, "linke"],
+			[this.formData.rightEye.lens, "rechte"],
+		];
+
+		for (let [lens, label] of lensData) {
+			if (lens.sphere == null) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen Sphärenwert für das ${label} Auge an.\n`;
+			}
+
+			if (lens.cylinder == null) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen Zylinderwert für das ${label} Auge an.\n`;
+			}
+
+			if (lens.axis == null) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen Achsenwert für das ${label} Auge an.\n`;
+			} else if (lens.axis < 0 || lens.axis > 180) {
+				this.validInput = false;
+				this.validationMessage += `Der Achsenwert für das ${label} Auge muss zwischen 0° und 180° liegen.\n`;
+			}
+		}
+	}
+
 	private _handleSubmit(_: Event) {
 		const event = new CustomEvent("add-observation", {
-			detail: this.getFormData(),
+			detail: this.formData,
 			bubbles: false, // Allow the event to bubble up
 			composed: true, // Allow the event to cross shadow DOM boundaries
 		});

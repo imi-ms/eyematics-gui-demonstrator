@@ -1,33 +1,35 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { CodingArgs } from "@fhir-typescript/r4b-core/dist/fhir/Coding";
-import { TonometrieData } from "./tonometryData.ts";
+import { IOPMethod, TonometrieData } from "./tonometryData.ts";
 
 const IOPMethod2Fhir = {
-	Applanation: [snomed("252803002", "Applanation tonometry")],
-	Pneumatic: [snomed("252804008", "Pneumatic tonometry")],
-	Extended: [snomed("252833009", "Extended tonometry")],
-	ExtendedOffice: [snomed("252835002", "Extended tonometry - office hours")],
-	Extended24: [snomed("252836001", "Extended tonometry - 24 hours")],
-	Schiotz: [snomed("389149000", "Schiotz tonometry (procedure)")],
-	NonContact: [snomed("389150000", "Non-contact tonometry (procedure)")],
-	Perkins: [snomed("389151001", "Perkins applanation tonometry (procedure)")],
-	Glodmann: [snomed("389152008", "Goldmann applanation tonometry (procedure)")],
-	Indentation: [snomed("392338001", "Indentation tonometry (procedure)")],
-	Rebound: [snomed("1286870002", "Rebound tonometry (procedure)")],
-	Mackay: [snomed("1286871003", "Mackay-Marg tonometry")],
-	Dynamic: [snomed("1286902005", "Dynamic contour tonometry (procedure)")],
-	Corneal: [snomed("1286906008", "Corneal compensated tonometry using ocular response analyzer (procedure)")],
-	Ocular: [snomed("1286913008", "Ocular response analyzer tonometry - Goldmann-correlated")],
-	Digital: [snomed("1286917009", "Digital tonometry")],
-	Portable: [snomed("1286918004", "Portable electronic applanation tonometry (procedure)")],
-	ReboundRemote: [
+	[IOPMethod.Applanation]: [snomed("252803002", "Applanation tonometry")],
+	[IOPMethod.Pneumatic]: [snomed("252804008", "Pneumatic tonometry")],
+	[IOPMethod.Extended]: [snomed("252833009", "Extended tonometry")],
+	[IOPMethod.ExtendedOffice]: [snomed("252835002", "Extended tonometry - office hours")],
+	[IOPMethod.Extended24]: [snomed("252836001", "Extended tonometry - 24 hours")],
+	[IOPMethod.Schiotz]: [snomed("389149000", "Schiotz tonometry (procedure)")],
+	[IOPMethod.NonContact]: [snomed("389150000", "Non-contact tonometry (procedure)")],
+	[IOPMethod.Perkins]: [snomed("389151001", "Perkins applanation tonometry (procedure)")],
+	[IOPMethod.Glodmann]: [snomed("389152008", "Goldmann applanation tonometry (procedure)")],
+	[IOPMethod.Indentation]: [snomed("392338001", "Indentation tonometry (procedure)")],
+	[IOPMethod.Rebound]: [snomed("1286870002", "Rebound tonometry (procedure)")],
+	[IOPMethod.Mackay]: [snomed("1286871003", "Mackay-Marg tonometry")],
+	[IOPMethod.Dynamic]: [snomed("1286902005", "Dynamic contour tonometry (procedure)")],
+	[IOPMethod.Corneal]: [
+		snomed("1286906008", "Corneal compensated tonometry using ocular response analyzer (procedure)"),
+	],
+	[IOPMethod.Ocular]: [snomed("1286913008", "Ocular response analyzer tonometry - Goldmann-correlated")],
+	[IOPMethod.Digital]: [snomed("1286917009", "Digital tonometry")],
+	[IOPMethod.Portable]: [snomed("1286918004", "Portable electronic applanation tonometry (procedure)")],
+	[IOPMethod.ReboundRemote]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/iop-methods",
 			code: "rebound-tonometry-remote",
 			display: "Rebound tonometry remote",
 		},
 	],
-	Contact: [
+	[IOPMethod.Contact]: [
 		{
 			system: "https://eyematics.org/fhir/eyematics-kds/CodeSystem/iop-methods",
 			code: "contact-lens-tonometry",
@@ -56,7 +58,7 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 			coding: [snomed("1290041000", "Entire left eye proper (body structure)")],
 		},
 		method: {
-			coding: IOPMethod2Fhir[data.tonometryType],
+			coding: IOPMethod2Fhir[data.iopMethod],
 		},
 	});
 
@@ -79,11 +81,11 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 			coding: [snomed("1290043002", "Entire right eye proper (body structure)")],
 		},
 		method: {
-			coding: IOPMethod2Fhir[data.tonometryType],
+			coding: IOPMethod2Fhir[data.iopMethod],
 		},
 	});
 
-	return [left.toJSON(), right.toJSON()];
+	return [left, right];
 }
 
 export function snomed(code: string, display: string): CodingArgs {
