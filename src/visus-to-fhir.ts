@@ -2,6 +2,7 @@ import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { CorrectionMethod, Optotype, TestDistance, VisusData } from "./VisusData.ts";
 import { snomed, loinc } from "./tonometry-to-fhir.ts";
 import { ObservationArgs, ObservationComponentArgs } from "@fhir-typescript/r4b-core/dist/fhir";
+import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
 
 const VisusCategories = {
 	FZ: [loinc("LA24679-5", "Count fingers (CF)")],
@@ -104,13 +105,14 @@ const Optotype2Fhir = {
 export function visus2Fhir(data: VisusData): Observation[] {
 	let left = new Observation({
 		resourceType: "Observation",
+		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
 		],
 		code: {
 			coding: [snomed("260246004", "Visual Acuity finding")],
 		},
-		effectiveDateTime: data.recordedDate,
+		effectiveDateTime: new Date(data.recordedDate).toISOString(),
 		...getVisusValue(data.leftEye.visus),
 		bodySite: {
 			coding: [snomed("1290041000", "Entire left eye proper (body structure)")],
@@ -145,13 +147,14 @@ export function visus2Fhir(data: VisusData): Observation[] {
 
 	let right = new Observation({
 		resourceType: "Observation",
+		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
 		],
 		code: {
 			coding: [snomed("260246004", "Visual Acuity finding")],
 		},
-		effectiveDateTime: data.recordedDate,
+		effectiveDateTime: new Date(data.recordedDate).toISOString(),
 		...getVisusValue(data.rightEye.visus),
 		bodySite: {
 			coding: [snomed("1290043002", "Entire right eye proper (body structure)")],

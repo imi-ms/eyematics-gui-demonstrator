@@ -1,6 +1,7 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { CodingArgs } from "@fhir-typescript/r4b-core/dist/fhir/Coding";
 import { IOPMethod, TonometrieData } from "./tonometryData.ts";
+import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
 
 const IOPMethod2Fhir = {
 	[IOPMethod.Applanation]: [snomed("252803002", "Applanation tonometry")],
@@ -41,13 +42,14 @@ const IOPMethod2Fhir = {
 export function tonometry2Fhir(data: TonometrieData): Observation[] {
 	let left = new Observation({
 		resourceType: "Observation",
+		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
 		],
 		code: {
 			coding: [loinc("56844-4", "Intraocular pressure of Eye"), snomed("41633001", "Intraocular pressure")],
 		},
-		effectiveDateTime: data.recordedDate,
+		effectiveDateTime: new Date(data.recordedDate).toISOString(),
 		valueQuantity: {
 			value: data.leftEye.pressure,
 			unit: "mm[Hg]",
@@ -64,13 +66,14 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 
 	let right = new Observation({
 		resourceType: "Observation",
+		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
 		],
 		code: {
 			coding: [loinc("56844-4", "Intraocular pressure of Eye"), snomed("41633001", "Intraocular pressure")],
 		},
-		effectiveDateTime: data.recordedDate,
+		effectiveDateTime: new Date(data.recordedDate).toISOString(),
 		valueQuantity: {
 			value: data.rightEye.pressure,
 			unit: "mm[Hg]",
