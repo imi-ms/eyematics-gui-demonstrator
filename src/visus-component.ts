@@ -143,12 +143,14 @@ export class VisusComponent extends LitElement {
 									class="sphere-right input is-small is-small-input"
 									type="number"
 									placeholder="sphere"
+									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="cylinder-right input is-small is-small-input"
 									type="number"
 									placeholder="cylinder"
+									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
@@ -171,11 +173,17 @@ export class VisusComponent extends LitElement {
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+							<div class="inputs-inline">
 								<label class="checkbox">
-                                    <input class="pinhole-right" type="checkbox" @input="${this._updateFormData}"/>
+                                    <input class="mydriasis-left" type="checkbox" @input="${this._updateFormData}"/>
+                                    <span class="checkbox-label"> Mydriasis</span>
+                                </label>
+								<label class="checkbox">
+                                    <input class="pinhole-left" type="checkbox" @input="${this._updateFormData}"/>
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
-                            </div>
+							</div>
                         </div>
 
                         <!-- Left Eye -->
@@ -186,12 +194,14 @@ export class VisusComponent extends LitElement {
 									class="sphere-left input is-small is-small-input"
 									type="number"
 									placeholder="sphere"
+									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="cylinder-left input is-small is-small-input"
 									type="number"
 									placeholder="cylinder"
+									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
@@ -214,11 +224,17 @@ export class VisusComponent extends LitElement {
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+							<div class="inputs-inline">
+								<label class="checkbox">
+                                    <input class="mydriasis-left" type="checkbox" @input="${this._updateFormData}"/>
+                                    <span class="checkbox-label"> Mydriasis</span>
+                                </label>
 								<label class="checkbox">
                                     <input class="pinhole-left" type="checkbox" @input="${this._updateFormData}"/>
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
-                            </div>
+							</div>
                         </div>
                     </div>
                     <button

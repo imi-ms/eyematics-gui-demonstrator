@@ -117,7 +117,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 		bodySite: {
 			coding: [snomed("1290041000", "Entire left eye proper (body structure)")],
 		},
-		...getVisusMethod(data.optotype),
 		component: [
 			getCorrectionMethod(data.correctionMethod, true, data.leftEye.lens),
 			{
@@ -159,7 +158,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 		bodySite: {
 			coding: [snomed("1290043002", "Entire right eye proper (body structure)")],
 		},
-		...getVisusMethod(data.optotype),
 		component: [
 			getCorrectionMethod(data.correctionMethod, false, data.rightEye.lens),
 			{
@@ -221,29 +219,6 @@ function getVisusValue(visus: string): Partial<ObservationArgs> {
 
 	// unknown visus
 	throw new TypeError(`Der folgende Wert für den Visus ist ungültig: ${visus}`);
-}
-
-function getVisusMethod(optotype: Optotype): Partial<ObservationArgs> {
-	const Optotyp2Method = {
-		Snellen: [snomed("400913005", "Snellen chart (physical object)")],
-		Chart: [snomed("400914004", "ETDRS visual acuity chart")],
-		Allen: [snomed("400915003", "Allen cards (physical object)")],
-		HOTV: [snomed("400916002", "HOTV cards (physical object)")],
-		// ?: [snomed("416307006", "Laser inferometer for potential acuity testing (physical object)")],
-		// ?: [snomed("417283003", "Potential acuity meter (physical object)")],
-		// ?: [snomed("418295001", "Near card (physical object)")],
-		// ?: [snomed("418570001", "Accommodative rule (physical object)")],
-		// ?: [snomed("421763006", "Visual acuity chart (physical object)")],
-	};
-
-	return {
-		method: {
-			coding:
-				optotype in Optotyp2Method
-					? Optotyp2Method[optotype]
-					: [snomed("421763006", "Visual acuity chart (physical object)")],
-		},
-	};
 }
 
 function getCorrectionMethod(
