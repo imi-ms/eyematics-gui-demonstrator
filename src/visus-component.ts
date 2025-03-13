@@ -137,7 +137,7 @@ export class VisusComponent extends LitElement {
                     <div class="horizontal-fields">
                         <!-- Right Eye -->
                         <div class="box">
-                            <div class="field-label">rechtes Auge</div>
+                            <div class="field-label">Rechtes Auge</div>
                             <div class="inputs-inline">
                                 <input
 									class="sphere-right input is-small is-small-input"
@@ -180,7 +180,7 @@ export class VisusComponent extends LitElement {
 
                         <!-- Left Eye -->
                         <div class="box">
-                            <div class="field-label">linkes Auge</div>
+                            <div class="field-label">Linkes Auge</div>
                             <div class="inputs-inline">
                                 <input
 									class="sphere-left input is-small is-small-input"

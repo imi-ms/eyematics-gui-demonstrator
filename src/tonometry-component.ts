@@ -26,28 +26,32 @@ export class TonometryComponent extends LitElement {
 			<section class="section">
 				<div class="container">
 					<!-- Header Section -->
-					<div class="field is-grouped is-align-items-center">
-						<label class="label has-text-weight-bold">Tonometrie:</label>
-						<div class="control">
-							<input
-								class="recordedDate input is-small"
-								type="datetime-local"
-								placeholder="Messzeitpunkt (Default: Jetzt)"
-								.value="${this.formData.recordedDate}"
-								@input="${this._updateFormData}"
-							/>
-						</div>
-						<div class="control">
-							<div class="select is-small">
-								<select class="iopMethod" @change="${this._updateFormData}">
-									${Object.entries(IOPMethod).map(
-										([key, value]) => html`
-											<option value="${key}" ?selected=${this.formData.iopMethod === value}>
-												${value}
-											</option>
-										`
-									)}
-								</select>
+					<div class="field">
+						<label class="label is-medium">
+							<strong>Tonometrie:</strong>
+						</label>
+						<div class="field is-grouped is-align-items-center">
+							<div class="control">
+								<input
+									class="recordedDate input is-small"
+									type="datetime-local"
+									placeholder="Messzeitpunkt (Default: Jetzt)"
+									.value="${this.formData.recordedDate}"
+									@input="${this._updateFormData}"
+								/>
+							</div>
+							<div class="control">
+								<div class="select is-small">
+									<select class="iopMethod" @change="${this._updateFormData}">
+										${Object.entries(IOPMethod).map(
+											([key, value]) => html`
+												<option value="${key}" ?selected=${this.formData.iopMethod === value}>
+													${value}
+												</option>
+											`
+										)}
+									</select>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -90,7 +94,7 @@ export class TonometryComponent extends LitElement {
 						<div class="column is-half">
 							<div class="field is-horizontal">
 								<div class="field-label">
-									<label class="label">linkes Auge:</label>
+									<label class="label">Linkes Auge:</label>
 								</div>
 								<div class="field-body">
 									<div class="field has-addons is-narrow">

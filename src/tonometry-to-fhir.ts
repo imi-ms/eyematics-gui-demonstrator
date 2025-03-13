@@ -62,6 +62,26 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 		method: {
 			coding: IOPMethod2Fhir[data.iopMethod],
 		},
+		component: [
+			{
+				code: {
+					coding: [
+						{
+							system: "http://snomed.info/sct",
+							code: "37125009",
+							display: "Dilated pupil (finding)",
+						},
+					],
+				},
+				valueCodeableConcept: {
+					coding: [
+						data.leftEye.mydriasis
+							? snomed("398166005", "Performed (qualifier value)")
+							: snomed("262008008", "Not performed (qualifier value)"),
+					],
+				},
+			},
+		],
 	});
 
 	let right = new Observation({
@@ -86,6 +106,26 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 		method: {
 			coding: IOPMethod2Fhir[data.iopMethod],
 		},
+		component: [
+			{
+				code: {
+					coding: [
+						{
+							system: "http://snomed.info/sct",
+							code: "37125009",
+							display: "Dilated pupil (finding)",
+						},
+					],
+				},
+				valueCodeableConcept: {
+					coding: [
+						data.rightEye.mydriasis
+							? snomed("398166005", "Performed (qualifier value)")
+							: snomed("262008008", "Not performed (qualifier value)"),
+					],
+				},
+			},
+		],
 	});
 
 	return [left, right];
