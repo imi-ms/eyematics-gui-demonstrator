@@ -306,11 +306,17 @@ export class VisusComponent extends LitElement {
 			if (lens.sphere == null) {
 				this.validInput = false;
 				this.validationMessage += `Bitte geben Sie einen Sphärenwert für das ${label} Auge an.\n`;
+			} else if (!this._isDivisibleByQuarter(lens.sphere)) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen gültigen Sphärenwert für das ${label} Auge an.\n`;
 			}
 
 			if (lens.cylinder == null) {
 				this.validInput = false;
 				this.validationMessage += `Bitte geben Sie einen Zylinderwert für das ${label} Auge an.\n`;
+			} else if (!this._isDivisibleByQuarter(lens.cylinder)) {
+				this.validInput = false;
+				this.validationMessage += `Bitte geben Sie einen gültigen Zylinderwert für das ${label} Auge an.\n`;
 			}
 
 			if (lens.axis == null) {
@@ -321,6 +327,11 @@ export class VisusComponent extends LitElement {
 				this.validationMessage += `Der Achsenwert für das ${label} Auge muss zwischen 0° und 180° liegen.\n`;
 			}
 		}
+	}
+
+	private _isDivisibleByQuarter(num: number): boolean {
+		let decimals = Math.abs(num % 1);
+		return decimals === 0 || decimals === 0.25 || decimals === 0.5 || decimals === 0.75;
 	}
 
 	private _handleSubmit(_: Event) {
