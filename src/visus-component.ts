@@ -33,6 +33,9 @@ const visusValues = [
 	"NL",
 ];
 
+const mainOptotypes = Object.entries(Optotype).slice(0, 3);
+const extraOptotypes = Object.entries(Optotype).slice(3);
+
 @customElement("visus-component")
 export class VisusComponent extends LitElement {
 	@state()
@@ -40,7 +43,7 @@ export class VisusComponent extends LitElement {
 		recordedDate: new Date().toISOString().slice(0, 16),
 		correctionMethod: CorrectionMethod.Glasses,
 		testDistance: TestDistance.Far,
-		optotype: Optotype.Landolt,
+		optotype: Optotype.Numbers,
 		rightEye: {
 			lens: {
 				sphere: null,
@@ -66,6 +69,9 @@ export class VisusComponent extends LitElement {
 
 	@state()
 	private validationMessage: string = "";
+
+	@state()
+	private expandOptotype = false;
 
 	render() {
 		this._validateInput();
@@ -119,15 +125,36 @@ export class VisusComponent extends LitElement {
                             </div>
                             <div class="control">
                                 <div class="select is-small">
-                                    <select class="optotype" @change="${this._updateFormData}">
-                                    ${Object.entries(Optotype).map(
-										([key, value]) => html`
-											<option value="${key}" ?selected=${this.formData.optotype === value}>
-												${value}
-											</option>
-										`
-									)}
-                                    </select>
+									<select class="optotype" @change="${(e: Event) => {
+										let value = (e.target as HTMLSelectElement).value;
+
+										if (!["more", "less"].includes(value)) {
+											this._updateFormData();
+											return;
+										}
+
+										this.expandOptotype = value === "more";
+									}}">
+										${mainOptotypes.map(
+											([key, value]) => html`
+												<option value="${key}" ?selected=${this.formData.optotype === value}>
+													${value}
+												</option>
+											`
+										)}
+										${
+											!this.expandOptotype
+												? html`<option value="more">Mehr anzeigen</option>`
+												: html`
+														${extraOptotypes.map(
+															([key, value]) => html`
+																<option value="${key}">${value}</option>
+															`
+														)}
+														<option value="less">Weniger anzeigen</option>
+												  `
+										}
+									</select>
                                 </div>
                             </div>
                         </div>

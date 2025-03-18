@@ -10,14 +10,14 @@ export enum CorrectionMethod {
 }
 
 export enum TestDistance {
-	Near = "Near",
 	Far = "Far",
 	Intermediate = "Intermediate",
-	// NotApplicable = "Not applicable",
-	// Unknown = "Unknown/Indeterminate",
+	Near = "Near",
 }
 
 export enum Optotype {
+	Numbers = "Numbers",
+	Snellen = "Snellen",
 	Landolt = "Landolt C",
 	Sjogren = "Sjogren's Hand Test",
 	Lea = "Lea Symbol Test",
@@ -33,10 +33,6 @@ export enum Optotype {
 	Chart = "Treatment chart",
 	Allen = "Allen figure",
 	HOTV = "HOTV",
-	Numbers = "Numbers",
-	Snellen = "Snellen",
-	// NotRecorded = "Not recorded",
-	// Unknown = "Unknown",
 }
 
 export interface VisusData {
