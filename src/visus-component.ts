@@ -126,7 +126,8 @@ export class VisusComponent extends LitElement {
                             <div class="control">
                                 <div class="select is-small">
 									<select class="optotype" @change="${(e: Event) => {
-										let value = (e.target as HTMLSelectElement).value;
+										let element = e.target as HTMLSelectElement;
+										let value = element.value;
 
 										if (!["more", "less"].includes(value)) {
 											this._updateFormData();
@@ -134,6 +135,7 @@ export class VisusComponent extends LitElement {
 										}
 
 										this.expandOptotype = value === "more";
+										setTimeout(() => element.showPicker(), 100);
 									}}">
 										${mainOptotypes.map(
 											([key, value]) => html`
@@ -144,14 +146,14 @@ export class VisusComponent extends LitElement {
 										)}
 										${
 											!this.expandOptotype
-												? html`<option value="more">Mehr anzeigen</option>`
+												? html`<option value="more">See More ↓</option>`
 												: html`
 														${extraOptotypes.map(
 															([key, value]) => html`
 																<option value="${key}">${value}</option>
 															`
 														)}
-														<option value="less">Weniger anzeigen</option>
+														<option value="less">See less ↑</option>
 												  `
 										}
 									</select>
