@@ -141,6 +141,30 @@ export function visus2Fhir(data: VisusData): Observation[] {
 					coding: Optotype2Fhir[data.optotype],
 				},
 			},
+			{
+				code: {
+					coding: [snomed("37125009", "Dilated pupil (finding)")],
+				},
+				valueCodeableConcept: {
+					coding: [
+						data.leftEye.mydriasis
+							? snomed("398166005", "Performed (qualifier value)")
+							: snomed("262008008", "Not performed (qualifier value)"),
+					],
+				},
+			},
+			{
+				code: {
+					coding: [snomed("257492003", "Pinhole (physical object)")],
+				},
+				valueCodeableConcept: {
+					coding: [
+						data.leftEye.pinhole
+							? snomed("373062004", "Device used (finding)")
+							: snomed("262009000", "Not used"),
+					],
+				},
+			},
 		],
 	});
 
@@ -180,6 +204,30 @@ export function visus2Fhir(data: VisusData): Observation[] {
 				},
 				valueCodeableConcept: {
 					coding: Optotype2Fhir[data.optotype],
+				},
+			},
+			{
+				code: {
+					coding: [snomed("37125009", "Dilated pupil (finding)")],
+				},
+				valueCodeableConcept: {
+					coding: [
+						data.rightEye.mydriasis
+							? snomed("398166005", "Performed (qualifier value)")
+							: snomed("262008008", "Not performed (qualifier value)"),
+					],
+				},
+			},
+			{
+				code: {
+					coding: [snomed("257492003", "Pinhole (physical object)")],
+				},
+				valueCodeableConcept: {
+					coding: [
+						data.rightEye.pinhole
+							? snomed("373062004", "Device used (finding)")
+							: snomed("262009000", "Not used"),
+					],
 				},
 			},
 		],

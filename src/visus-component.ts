@@ -51,6 +51,7 @@ export class VisusComponent extends LitElement {
 				axis: null,
 			},
 			visus: "",
+			mydriasis: false,
 			pinhole: false,
 		},
 		leftEye: {
@@ -60,6 +61,7 @@ export class VisusComponent extends LitElement {
 				axis: null,
 			},
 			visus: "",
+			mydriasis: false,
 			pinhole: false,
 		},
 	};
@@ -205,11 +207,11 @@ export class VisusComponent extends LitElement {
                             </div>
 							<div class="inputs-inline">
 								<label class="checkbox">
-                                    <input class="mydriasis-left" type="checkbox" @input="${this._updateFormData}"/>
+                                    <input class="mydriasis-right" type="checkbox" @input="${this._updateFormData}"/>
                                     <span class="checkbox-label"> Mydriasis</span>
                                 </label>
 								<label class="checkbox">
-                                    <input class="pinhole-left" type="checkbox" @input="${this._updateFormData}"/>
+                                    <input class="pinhole-right" type="checkbox" @input="${this._updateFormData}"/>
                                     <span class="checkbox-label"> Stenop.</span>
                                 </label>
 							</div>
@@ -292,6 +294,7 @@ export class VisusComponent extends LitElement {
 					axis: getNumberOrNull(this.renderRoot, ".axis-right"),
 				},
 				visus: this.renderRoot.querySelector<HTMLSelectElement>(".visus-right")?.value,
+				mydriasis: this.renderRoot.querySelector<HTMLInputElement>(".mydriasis-right")?.checked,
 				pinhole: this.renderRoot.querySelector<HTMLInputElement>(".pinhole-right")?.checked,
 			},
 			leftEye: {
@@ -301,6 +304,7 @@ export class VisusComponent extends LitElement {
 					axis: getNumberOrNull(this.renderRoot, ".axis-left"),
 				},
 				visus: this.renderRoot.querySelector<HTMLSelectElement>(".visus-left")?.value,
+				mydriasis: this.renderRoot.querySelector<HTMLInputElement>(".mydriasis-left")?.checked,
 				pinhole: this.renderRoot.querySelector<HTMLInputElement>(".pinhole-left")?.checked,
 			},
 		};

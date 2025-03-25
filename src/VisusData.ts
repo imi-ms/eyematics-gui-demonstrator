@@ -47,6 +47,7 @@ export interface VisusData {
 			axis: number;
 		};
 		visus: string;
+		mydriasis: boolean;
 		pinhole: boolean;
 	};
 	leftEye: {
@@ -56,6 +57,7 @@ export interface VisusData {
 			axis: number;
 		};
 		visus: string;
+		mydriasis: boolean;
 		pinhole: boolean;
 	};
 }

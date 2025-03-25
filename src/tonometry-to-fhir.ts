@@ -109,13 +109,7 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 		component: [
 			{
 				code: {
-					coding: [
-						{
-							system: "http://snomed.info/sct",
-							code: "37125009",
-							display: "Dilated pupil (finding)",
-						},
-					],
+					coding: [snomed("37125009", "Dilated pupil (finding)")],
 				},
 				valueCodeableConcept: {
 					coding: [

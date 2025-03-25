@@ -36,7 +36,6 @@ export class MyElement extends LitElement {
 		Seitigkeit: "Observation.bodySite.coding",
 		Code: "Observation.code.coding",
 		Visus: "iif(Observation.value.coding.exists(), Observation.value.coding, Observation.value)",
-		Methode: "Observation.method.coding",
 		Korrektion:
 			"Observation.component.where(code.coding.code.value in ('29073-4' | '29074-2')).select(value.coding | extension)",
 		Testentfernung: "Observation.component.where(code.coding.code.value='252124009').value.coding",
