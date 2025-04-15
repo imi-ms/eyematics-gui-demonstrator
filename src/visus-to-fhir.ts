@@ -1,5 +1,5 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
-import { CorrectionMethod, Optotype, TestDistance, VisusData } from "./VisusData.ts";
+import { CorrectionMethod, Optotype, TestDistance, VisusData } from "./visusData.ts";
 import { snomed, loinc } from "./tonometry-to-fhir.ts";
 import { ObservationArgs, ObservationComponentArgs } from "@fhir-typescript/r4b-core/dist/fhir";
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
@@ -56,8 +56,6 @@ const TestDistance2Fhir = {
 	[TestDistance.Near]: [loinc("LA32578-9", "Near")],
 	[TestDistance.Far]: [loinc("LA32577-1", "Far")],
 	[TestDistance.Intermediate]: [loinc("LA16550-8", "Intermediate")],
-	// NotApplicable: [loinc("LA4720-4", "Not applicable")],
-	// Unknown: [loinc("LA13420-7", "Unknown/Indeterminate")],
 };
 
 const Optotype2Fhir = {
@@ -98,8 +96,6 @@ const Optotype2Fhir = {
 	[Optotype.HOTV]: [loinc("LA25496-3", "HOTV")],
 	[Optotype.Numbers]: [loinc("LA25497-1", "Numbers")],
 	[Optotype.Snellen]: [loinc("LA25498-9", "Snellen")],
-	// NotRecorded: [snomed("1220561009", "Not recorded")],
-	// Unknown: [snomed("261665006", "Unknown")],
 };
 
 export function visus2Fhir(data: VisusData): Observation[] {

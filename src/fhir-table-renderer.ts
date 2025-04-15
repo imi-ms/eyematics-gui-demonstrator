@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { evaluate } from "fhirpath";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 /**
  * Interface for the dynamic table configuration.
@@ -88,7 +89,7 @@ export class FhirTableRenderer<T> extends LitElement {
 				}
 			}
 
-			return resultList.join("\n");
+			return resultList.join("<br>");
 		}
 
 		return html`
@@ -97,7 +98,7 @@ export class FhirTableRenderer<T> extends LitElement {
 					<tr>
 						<th></th>
 						${columnNames.map(
-							(columnName) => html` <th title="${this.columnMap[columnName]}">${columnName}</th>`
+							(columnName) => html`<th title="${this.columnMap[columnName]}">${columnName}</th>`
 						)}
 					</tr>
 				</thead>
@@ -107,7 +108,8 @@ export class FhirTableRenderer<T> extends LitElement {
 							<tr>
 								<td @click="${() => this._openModal(item)}"><a>🔥</a></td>
 								${columnNames.map(
-									(columnName) => html` <td>${extracted(this.columnMap, columnName, item)}</td>`
+									(columnName) =>
+										html`<td>${unsafeHTML(extracted(this.columnMap, columnName, item))}</td>`
 								)}
 							</tr>
 						`

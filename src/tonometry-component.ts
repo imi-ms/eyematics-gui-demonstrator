@@ -57,6 +57,7 @@ export class TonometryComponent extends LitElement {
 					</div>
 
 					<div class="columns mt-3">
+						<!-- Right Eye -->
 						<div class="column is-half">
 							<div class="field is-horizontal">
 								<div class="field-label">

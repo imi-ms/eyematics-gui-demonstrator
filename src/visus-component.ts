@@ -1,7 +1,7 @@
 import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
-import { VisusData, CorrectionMethod, TestDistance, Optotype } from "./VisusData.ts";
+import { VisusData, CorrectionMethod, TestDistance, Optotype } from "./visusData.ts";
 import { getNumberOrNull } from "./tonometry-component.ts";
 
 const visusValues = [
