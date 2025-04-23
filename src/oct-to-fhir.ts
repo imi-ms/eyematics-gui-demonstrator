@@ -3,7 +3,7 @@ import { snomed, loinc } from "./tonometry-to-fhir.ts";
 
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
 import { Bundle, BundleEntry, Device, ImagingStudy, Reference } from "@fhir-typescript/r4b-core/dist/fhir";
-import { MacularMap, OCTData, RNFLMap } from "./octData.ts";
+import { MacularMap, OCTData, RNFLMap } from "./oct-data.ts";
 
 const MacularMap2Fhir = {
 	[MacularMap.CenterPoint]: [loinc("57108-3", "Macular grid.center point thickness by OCT")],

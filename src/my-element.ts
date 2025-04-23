@@ -2,21 +2,23 @@ import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { classMap } from "lit/directives/class-map.js";
-import { TonometrieData } from "./tonometryData.ts";
+import { TonometrieData } from "./tonometry-data.ts";
 import { TonometryComponent } from "./tonometry-component.ts";
 import { ColumnConfig, FhirTableRenderer } from "./fhir-table-renderer.ts";
 import { tonometry2Fhir } from "./tonometry-to-fhir.ts";
 import { visus2Fhir } from "./visus-to-fhir.ts";
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { VisusComponent } from "./visus-component.ts";
-import { VisusData } from "./visusData.ts";
+import { VisusData } from "./visus-data.ts";
 import { FunduscopyComponent } from "./funduscopy-component.ts";
 import { funduscopy2Fhir } from "./funduscopy-to-fhir.ts";
 import { Bundle } from "@fhir-typescript/r4b-core/dist/fhir/Bundle";
-import { FunduscopyData } from "./funduscopyData.ts";
-import { OCTData } from "./octData.ts";
+import { FunduscopyData } from "./funduscopy-data.ts";
+import { OCTData } from "./oct-data.ts";
 import { OCTComponent } from "./oct-component.ts";
 import { oct2Fhir } from "./oct-to-fhir.ts";
+import { AnteriorChamberComponent } from "./anterior-chamber-component.ts";
+import { anteriorChamber2Fhir } from "./anterior-chamber-to-fhir.ts";
 
 @customElement("my-element")
 export class MyElement extends LitElement {
@@ -28,6 +30,9 @@ export class MyElement extends LitElement {
 
 	@state()
 	private visusData: Observation[] = [];
+
+	@state()
+	private anteriorChamberData: Bundle[] = [];
 
 	@state()
 	private funduscopyData: Bundle[] = [];
@@ -58,11 +63,20 @@ export class MyElement extends LitElement {
 		"Stenopäische Lücke": "Observation.component.where(code.coding.code.value='257492003').value.coding",
 	};
 
+	private columnMapAnteriorChamber: ColumnConfig<FunduscopyData> = {
+		Diagnosezeitpunkt: "Bundle.entry.resource.effective[0]",
+		Seitigkeit: "Bundle.entry.resource.bodySite.coding[0]",
+		Code: "Bundle.entry.resource.code.coding",
+		"SUN Grad": "Bundle.entry.resource.value.coding",
+		Befunde: "Bundle.entry.resource.where(resourceType='DiagnosticReport').conclusion",
+	};
+
 	private columnMapFunduscopy: ColumnConfig<FunduscopyData> = {
 		Diagnosezeitpunkt: "Bundle.entry.resource.effective[0]",
 		Seitigkeit: "Bundle.entry.resource.bodySite.coding[0]",
 		Code: "Bundle.entry.resource.code.coding",
 		Status: "Bundle.entry.resource.value.coding",
+		Befunde: "Bundle.entry.resource.where(resourceType='DiagnosticReport').conclusion",
 	};
 
 	private columnMapOCT: ColumnConfig<OCTData> = {
@@ -76,10 +90,11 @@ export class MyElement extends LitElement {
 	render() {
 		//do not treeshake
 		new TonometryComponent();
-		new FhirTableRenderer();
 		new VisusComponent();
+		new AnteriorChamberComponent();
 		new FunduscopyComponent();
 		new OCTComponent();
+		new FhirTableRenderer();
 
 		return html`
 			<div class="tabs is-medium">
@@ -97,6 +112,13 @@ export class MyElement extends LitElement {
 						id="visusTab"
 					>
 						<a>Visus</a>
+					</li>
+					<li
+						class="${classMap({ "is-active": this.activeTab === "anteriorChamberTab" })}"
+						@click=${this._onClick}
+						id="anteriorChamberTab"
+					>
+						<a>Vorderkammer</a>
 					</li>
 					<li
 						class="${classMap({ "is-active": this.activeTab === "funduscopyTab" })}"
@@ -132,6 +154,12 @@ export class MyElement extends LitElement {
 					.columnMap="${this.columnMapVisus}"
 					.data="${this.visusData}"
 				></fhir-table-renderer>`;
+		} else if (this.activeTab == "anteriorChamberTab") {
+			return html` <anterior-chamber-component @add-observation="${this._handleAdd}"></anterior-chamber-component>
+				<fhir-table-renderer
+					.columnMap="${this.columnMapAnteriorChamber}"
+					.data="${this.anteriorChamberData}"
+				></fhir-table-renderer>`;
 		} else if (this.activeTab == "funduscopyTab") {
 			return html` <funduscopy-component @add-observation="${this._handleAdd}"></funduscopy-component>
 				<fhir-table-renderer
@@ -153,6 +181,8 @@ export class MyElement extends LitElement {
 			this.tonometryData = [...this.tonometryData, ...tonometry2Fhir(e.detail)];
 		} else if (this.activeTab == "visusTab") {
 			this.visusData = [...this.visusData, ...visus2Fhir(e.detail)];
+		} else if (this.activeTab == "anteriorChamberTab") {
+			this.anteriorChamberData = [...this.anteriorChamberData, ...anteriorChamber2Fhir(e.detail)];
 		} else if (this.activeTab == "funduscopyTab") {
 			this.funduscopyData = [...this.funduscopyData, ...funduscopy2Fhir(e.detail)];
 		} else if (this.activeTab == "octTab") {

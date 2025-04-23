@@ -10,10 +10,12 @@ export interface FunduscopyData {
 		papillEdema: PresenceStatus;
 		macularEdema: PresenceStatus;
 		vascuitis: PresenceStatus;
+		note: string;
 	};
 	leftEye: {
 		papillEdema: PresenceStatus;
 		macularEdema: PresenceStatus;
 		vascuitis: PresenceStatus;
+		note: string;
 	};
 }

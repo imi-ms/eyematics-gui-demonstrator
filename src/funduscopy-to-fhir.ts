@@ -1,8 +1,9 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
-import { snomed, loinc } from "./tonometry-to-fhir.ts";
-import { FunduscopyData, PresenceStatus } from "./funduscopyData.ts";
+import { snomed } from "./tonometry-to-fhir.ts";
+import { FunduscopyData, PresenceStatus } from "./funduscopy-data.ts";
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
-import { Bundle } from "@fhir-typescript/r4b-core/dist/fhir";
+import { Bundle, BundleEntry } from "@fhir-typescript/r4b-core/dist/fhir";
+import { getDiagnosticReport } from "./anterior-chamber-to-fhir.ts";
 
 const PresenceStatus2Fhir = {
 	[PresenceStatus.Present]: [snomed("52101004", "Present (qualifier value)")],
@@ -71,6 +72,11 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 		entry: [{ resource: papillEdemaLeft }, { resource: macularEdemaLeft }, { resource: vascuitisLeft }],
 	});
 
+	// add optional note for left eye if present
+	if (!!data.leftEye.note) {
+		left.entry.push(new BundleEntry({ resource: getDiagnosticReport(data.recordedDate, data.leftEye.note) }));
+	}
+
 	let papillEdemaRight = new Observation({
 		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
@@ -130,6 +136,11 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 		type: "collection",
 		entry: [{ resource: papillEdemaRight }, { resource: macularEdemaRight }, { resource: vascuitisRight }],
 	});
+
+	// add optional note for right eye if present
+	if (!!data.rightEye.note) {
+		right.entry.push(new BundleEntry({ resource: getDiagnosticReport(data.recordedDate, data.rightEye.note) }));
+	}
 
 	return [left, right];
 }

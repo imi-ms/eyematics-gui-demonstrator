@@ -1,7 +1,7 @@
 import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
-import { MacularMap, OCTData, RNFLMap } from "./octData.ts";
+import { MacularMap, OCTData, RNFLMap } from "./oct-data.ts";
 import { getNumberOrNull } from "./tonometry-component.ts";
 import * as dicomParser from "dicom-parser";
 

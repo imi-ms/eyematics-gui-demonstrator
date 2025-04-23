@@ -1,6 +1,6 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { CodingArgs } from "@fhir-typescript/r4b-core/dist/fhir/Coding";
-import { IOPMethod, TonometrieData } from "./tonometryData.ts";
+import { IOPMethod, TonometrieData } from "./tonometry-data.ts";
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
 
 const IOPMethod2Fhir = {

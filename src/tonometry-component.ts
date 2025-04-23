@@ -1,7 +1,7 @@
 import { customElement, state } from "lit/decorators.js";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
-import { IOPMethod, TonometrieData } from "./tonometryData.ts";
+import { IOPMethod, TonometrieData } from "./tonometry-data.ts";
 
 @customElement("tonometry-component")
 export class TonometryComponent extends LitElement {
@@ -23,7 +23,7 @@ export class TonometryComponent extends LitElement {
 		this._validateInput();
 
 		return html`
-			<section class="section">
+			<section class="section tonometry-container">
 				<div class="container">
 					<!-- Header Section -->
 					<div class="field">
@@ -55,73 +55,55 @@ export class TonometryComponent extends LitElement {
 							</div>
 						</div>
 					</div>
-
-					<div class="columns mt-3">
+					<!-- Right and Left Eye Fields -->
+					<div class="horizontal-fields">
 						<!-- Right Eye -->
-						<div class="column is-half">
-							<div class="field is-horizontal">
-								<div class="field-label">
-									<label class="label">Rechtes Auge:</label>
-								</div>
-								<div class="field-body">
-									<div class="field has-addons is-narrow">
-										<div class="control">
-											<input
-												class="pressure-right input is-small"
-												type="number"
-												placeholder="Tonometrie rechts"
-												min="0"
-												@input="${this._updateFormData}"
-											/>
-										</div>
-										<p class="button is-static is-small">mmHg</p>
+						<div class="box">
+							<div class="field-label">Rechtes Auge</div>
+							<div class="inputs-inline">
+								<div class="field has-addons is-narrow">
+									<div class="control">
+										<input
+											class="pressure-right input is-small"
+											type="number"
+											placeholder="Tonometrie rechts"
+											min="0"
+											@input="${this._updateFormData}"
+										/>
 									</div>
-									<div class="field ml-2">
-										<label class="checkbox">
-											<input
-												class="mydriasis-right"
-												type="checkbox"
-												.value="${this.formData.rightEye.mydriasis}"
-												@input="${this._updateFormData}"
-											/>
-											Mydriasis</label
-										>
-									</div>
+									<p class="button is-static is-small">mmHg</p>
 								</div>
+							</div>
+							<div class="inputs-inline">
+								<label class="checkbox">
+									<input class="mydriasis-right" type="checkbox" @input="${this._updateFormData}" />
+									<span class="checkbox-label"> Mydriasis</span>
+								</label>
 							</div>
 						</div>
 
 						<!-- Left Eye -->
-						<div class="column is-half">
-							<div class="field is-horizontal">
-								<div class="field-label">
-									<label class="label">Linkes Auge:</label>
-								</div>
-								<div class="field-body">
-									<div class="field has-addons is-narrow">
-										<div class="control">
-											<input
-												class="pressure-left input is-small"
-												type="number"
-												placeholder="Tonometrie links"
-												min="0"
-												@input="${this._updateFormData}"
-											/>
-										</div>
-										<p class="button is-static is-small">mmHg</p>
+						<div class="box">
+							<div class="field-label">Linkes Auge</div>
+							<div class="inputs-inline">
+								<div class="field has-addons is-narrow">
+									<div class="control">
+										<input
+											class="pressure-left input is-small"
+											type="number"
+											placeholder="Tonometrie links"
+											min="0"
+											@input="${this._updateFormData}"
+										/>
 									</div>
-									<div class="field ml-2">
-										<label class="checkbox"
-											><input
-												class="mydriasis-left"
-												type="checkbox"
-												.value="${this.formData.leftEye.mydriasis}"
-												@input="${this._updateFormData}"
-											/>
-											Mydriasis</label
-										>
-									</div>
+									<p class="button is-static is-small">mmHg</p>
 								</div>
+							</div>
+							<div class="inputs-inline">
+								<label class="checkbox">
+									<input class="mydriasis-left" type="checkbox" @input="${this._updateFormData}" />
+									<span class="checkbox-label"> Mydriasis</span>
+								</label>
 							</div>
 						</div>
 					</div>
@@ -183,7 +165,41 @@ export class TonometryComponent extends LitElement {
 		this.dispatchEvent(event);
 	}
 
-	static styles = [bulmaStyles];
+	static styles = [
+		bulmaStyles,
+		css`
+			.tonometry-container {
+				margin: 1rem auto;
+				max-width: 800px;
+			}
+
+			.field-label {
+				font-weight: bold;
+				text-align: center;
+			}
+
+			.horizontal-fields {
+				display: flex;
+				justify-content: space-between;
+				margin: 0.75em;
+			}
+
+			.horizontal-fields .box {
+				width: 45%;
+				margin-bottom: 0;
+			}
+
+			.inputs-inline {
+				display: flex;
+				gap: 0.5rem;
+				margin-bottom: 0.75rem;
+			}
+
+			.is-small-input {
+				width: 30%;
+			}
+		`,
+	];
 }
 
 export function getNumberOrNull(root: HTMLElement | DocumentFragment, className: string) {

@@ -1,7 +1,7 @@
 import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
-import { PresenceStatus, FunduscopyData } from "./funduscopyData.ts";
+import { PresenceStatus, FunduscopyData } from "./funduscopy-data.ts";
 
 @customElement("funduscopy-component")
 export class FunduscopyComponent extends LitElement {
@@ -12,11 +12,13 @@ export class FunduscopyComponent extends LitElement {
 			papillEdema: PresenceStatus.Unknown,
 			macularEdema: PresenceStatus.Unknown,
 			vascuitis: PresenceStatus.Unknown,
+			note: "",
 		},
 		leftEye: {
 			papillEdema: PresenceStatus.Unknown,
 			macularEdema: PresenceStatus.Unknown,
 			vascuitis: PresenceStatus.Unknown,
+			note: "",
 		},
 	};
 
@@ -25,6 +27,8 @@ export class FunduscopyComponent extends LitElement {
 
 	@state()
 	private validationMessage: string = "";
+
+	private validate: boolean = false;
 
 	render() {
 		this._validateInput();
@@ -64,7 +68,7 @@ export class FunduscopyComponent extends LitElement {
                                         value="Present"
                                         @input="${this._updateFormData}"
                                     />
-                                    <span class="a-label">Ja</span>
+                                    <span class="checkbox-label">Ja</span>
                                 </label>
                                 <label class="radio">
                                     <input
@@ -85,7 +89,7 @@ export class FunduscopyComponent extends LitElement {
                                         value="Present"
                                         @input="${this._updateFormData}"
                                     />
-                                    <span class="a-label">Ja</span>
+                                    <span class="checkbox-label">Ja</span>
                                 </label>
                                 <label class="radio">
                                     <input
@@ -106,7 +110,7 @@ export class FunduscopyComponent extends LitElement {
                                         value="Present"
                                         @input="${this._updateFormData}"
                                     />
-                                    <span class="a-label">Ja</span>
+                                    <span class="checkbox-label">Ja</span>
                                 </label>
                                 <label class="radio">
                                     <input
@@ -117,6 +121,16 @@ export class FunduscopyComponent extends LitElement {
                                     />
                                     <span class="checkbox-label">Nein</span>
                                 </label>
+                            </div>
+                            <label class="label">Zusätzliche Befunde:</label>
+                            <div class="field">
+                                <div class="control">
+                                    <textarea
+                                        class="note-right textarea is-small"
+                                        placeholder="Freitext für das rechtes Auge"
+                                        @input="${this._updateFormData}"
+                                    ></textarea>
+                                </div>
                             </div>
                         </div>
 
@@ -132,7 +146,7 @@ export class FunduscopyComponent extends LitElement {
                                         value="Present"
                                         @input="${this._updateFormData}"
                                     />
-                                    <span class="a-label">Ja</span>
+                                    <span class="checkbox-label">Ja</span>
                                 </label>
                                 <label class="radio">
                                     <input
@@ -153,7 +167,7 @@ export class FunduscopyComponent extends LitElement {
                                         value="Present"
                                         @input="${this._updateFormData}"
                                     />
-                                    <span class="a-label">Ja</span>
+                                    <span class="checkbox-label">Ja</span>
                                 </label>
                                 <label class="radio">
                                     <input
@@ -174,7 +188,7 @@ export class FunduscopyComponent extends LitElement {
                                         value="Present"
                                         @input="${this._updateFormData}"
                                     />
-                                    <span class="a-label">Ja</span>
+                                    <span class="checkbox-label">Ja</span>
                                 </label>
                                 <label class="radio">
                                     <input
@@ -185,6 +199,16 @@ export class FunduscopyComponent extends LitElement {
                                     />
                                     <span class="checkbox-label">Nein</span>
                                 </label>
+                            </div>
+                            <label class="label">Zusätzliche Befunde:</label>
+                            <div class="field">
+                                <div class="control">
+                                    <textarea
+                                        class="note-left textarea is-small"
+                                        placeholder="Freitext für das linkes Auge"
+                                        @input="${this._updateFormData}"
+                                    ></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -207,11 +231,13 @@ export class FunduscopyComponent extends LitElement {
 				papillEdema: this._getPresenceStatus("papillEdema-right"),
 				macularEdema: this._getPresenceStatus("macularEdema-right"),
 				vascuitis: this._getPresenceStatus("vascuitis-right"),
+				note: this.renderRoot.querySelector<HTMLInputElement>(".note-right")?.value,
 			},
 			leftEye: {
 				papillEdema: this._getPresenceStatus("papillEdema-left"),
 				macularEdema: this._getPresenceStatus("macularEdema-left"),
 				vascuitis: this._getPresenceStatus("vascuitis-left"),
+				note: this.renderRoot.querySelector<HTMLInputElement>(".note-left")?.value,
 			},
 		};
 	}
@@ -236,7 +262,7 @@ export class FunduscopyComponent extends LitElement {
 
 		for (let [status, finding, sideness] of funduscopyData) {
 			if (status === PresenceStatus.Unknown) {
-				this.validInput = false;
+				this.validInput = this.validate ? false : true;
 				this.validationMessage += `Bitte geben Sie an, ob ${finding} am ${sideness} Auge vorhanden ist oder nicht.\n`;
 			}
 		}

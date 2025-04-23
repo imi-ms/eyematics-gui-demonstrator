@@ -1,5 +1,5 @@
 import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
-import { CorrectionMethod, Optotype, TestDistance, VisusData } from "./visusData.ts";
+import { CorrectionMethod, Optotype, TestDistance, VisusData } from "./visus-data.ts";
 import { snomed, loinc } from "./tonometry-to-fhir.ts";
 import { ObservationArgs, ObservationComponentArgs } from "@fhir-typescript/r4b-core/dist/fhir";
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
