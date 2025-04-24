@@ -2,7 +2,7 @@ import { Observation } from "@fhir-typescript/r4b-core/dist/fhir/Observation";
 import { snomed, loinc } from "./tonometry-to-fhir.ts";
 
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
-import { Bundle, BundleEntry, DiagnosticReport } from "@fhir-typescript/r4b-core/dist/fhir";
+import { Bundle, BundleEntry, DiagnosticReport, Reference } from "@fhir-typescript/r4b-core/dist/fhir";
 import { AnteriorChamberData, SUNCells, SUNFlare } from "./anterior-chamber-data.ts";
 
 const SUNFlare2Fhir = {
@@ -27,6 +27,7 @@ const SUNCells2Fhir = {
 export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 	let cellsLeft = new Observation({
 		resourceType: "Observation",
+		id: "cells-left",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -45,6 +46,7 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 
 	let flareLeft = new Observation({
 		resourceType: "Observation",
+		id: "flare-left",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -69,11 +71,16 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 
 	// add optional note for left eye if present
 	if (!!data.leftEye.note) {
-		left.entry.push(new BundleEntry({ resource: getDiagnosticReport(data.recordedDate, data.leftEye.note) }));
+		left.entry.push(
+			new BundleEntry({
+				resource: getDiagnosticReport(data.recordedDate, data.leftEye.note, [cellsLeft, flareLeft]),
+			})
+		);
 	}
 
 	let cellsRight = new Observation({
 		resourceType: "Observation",
+		id: "cells-right",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -92,6 +99,7 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 
 	let flareRight = new Observation({
 		resourceType: "Observation",
+		id: "flare-right",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -116,13 +124,17 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 
 	// add optional note for right eye if present
 	if (!!data.rightEye.note) {
-		right.entry.push(new BundleEntry({ resource: getDiagnosticReport(data.recordedDate, data.rightEye.note) }));
+		right.entry.push(
+			new BundleEntry({
+				resource: getDiagnosticReport(data.recordedDate, data.rightEye.note, [cellsRight, flareRight]),
+			})
+		);
 	}
 
 	return [left, right];
 }
 
-export function getDiagnosticReport(date: string, note: string) {
+export function getDiagnosticReport(date: string, note: string, results: Observation[]) {
 	return new DiagnosticReport({
 		resourceType: "DiagnosticReport",
 		status: ObservationStatusCodes.Final,
@@ -136,5 +148,6 @@ export function getDiagnosticReport(date: string, note: string) {
 		},
 		effectiveDateTime: new Date(date).toISOString(),
 		conclusion: note,
+		result: results.map((r) => new Reference({ reference: `Observation/${r.id}` })),
 	});
 }

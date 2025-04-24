@@ -74,7 +74,15 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 
 	// add optional note for left eye if present
 	if (!!data.leftEye.note) {
-		left.entry.push(new BundleEntry({ resource: getDiagnosticReport(data.recordedDate, data.leftEye.note) }));
+		left.entry.push(
+			new BundleEntry({
+				resource: getDiagnosticReport(data.recordedDate, data.leftEye.note, [
+					papillEdemaLeft,
+					macularEdemaLeft,
+					vascuitisLeft,
+				]),
+			})
+		);
 	}
 
 	let papillEdemaRight = new Observation({
@@ -139,7 +147,15 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 
 	// add optional note for right eye if present
 	if (!!data.rightEye.note) {
-		right.entry.push(new BundleEntry({ resource: getDiagnosticReport(data.recordedDate, data.rightEye.note) }));
+		right.entry.push(
+			new BundleEntry({
+				resource: getDiagnosticReport(data.recordedDate, data.rightEye.note, [
+					papillEdemaRight,
+					macularEdemaRight,
+					vascuitisRight,
+				]),
+			})
+		);
 	}
 
 	return [left, right];

@@ -223,9 +223,6 @@ export class AnteriorChamberComponent extends LitElement {
 				max-width: 800px;
 			}
 
-			.anterior-chamber-input select {
-				width: 10em;
-			}
 			.anterior-chamber-input select:invalid {
 				color: gray;
 			}
