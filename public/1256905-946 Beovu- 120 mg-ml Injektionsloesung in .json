@@ -1,0 +1,140 @@
+{
+	"resourceType": "Medication",
+	"id": "Brolucizumab",
+	"code": {
+		"coding": [
+			{
+				"system": "http://fhir.de/CodeSystem/ifa/pzn",
+				"version": "2025-04-24",
+				"code": "15559977",
+				"userSelected": false
+			},
+			{
+				"system": "http://fhir.de/CodeSystem/bfarm/atc",
+				"version": "2025-04-24",
+				"code": "S01LA06",
+				"display": "Brolucizumab",
+				"userSelected": false
+			}
+		],
+		"text": "Beovu® 120 mg/ml Injektionslösung in einer Fertigspritze"
+	},
+	"status": "active",
+	"manufacturer": {
+		"type": "Organization",
+		"identifier": {
+			"use": "temp",
+			"value": "946"
+		},
+		"display": "Novartis Pharma GmbH"
+	},
+	"form": {
+		"coding": [
+			{
+				"system": "https://standardterms.edqm.eu",
+				"version": "2024-05-29",
+				"code": "11201000",
+				"display": "Solution for injection",
+				"userSelected": false
+			}
+		],
+		"text": "Solution for injection"
+	},
+	"amount": {
+		"numerator": {
+			"value": 0.165,
+			"unit": "ml",
+			"system": "http://unitsofmeasure.org",
+			"code": "ml"
+		},
+		"denominator": {
+			"value": 1,
+			"system": "http://unitsofmeasure.org",
+			"code": "1"
+		}
+	},
+	"ingredient": [
+		{
+			"id": "#ing_1",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "10136"
+				},
+				"display": "Natrium citrat"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_2",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "16697"
+				},
+				"display": "Sucrose"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_3",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "16819"
+				},
+				"display": "Wasser für Injektionszwecke"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_4",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "23337"
+				},
+				"display": "Polysorbat 80"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_5",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "56011"
+				},
+				"display": "Brolucizumab"
+			},
+			"isActive": true,
+			"strength": {
+				"numerator": {
+					"value": 19.8,
+					"unit": "mg",
+					"system": "http://unitsofmeasure.org",
+					"code": "mg"
+				},
+				"denominator": {
+					"value": 1,
+					"system": "http://unitsofmeasure.org",
+					"code": "1"
+				}
+			}
+		}
+	],
+	"meta": {
+		"source": "https://www.mmi.de/mmi-pharmindex/mmi-pharmindex-daten"
+	},
+	"identifier": [
+		{
+			"use": "temp",
+			"value": "1256905-946"
+		}
+	]
+}

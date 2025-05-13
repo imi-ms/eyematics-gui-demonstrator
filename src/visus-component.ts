@@ -173,21 +173,21 @@ export class VisusComponent extends LitElement {
                                 <input
 									class="sphere-right input is-small is-small-input"
 									type="number"
-									placeholder="sphere"
+									placeholder="Sphäre"
 									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="cylinder-right input is-small is-small-input"
 									type="number"
-									placeholder="cylinder"
+									placeholder="Zylinder"
 									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="axis-right input is-small is-small-input"
 									type="number"
-									placeholder="axis"
+									placeholder="Achse"
 									min="0"
 									max="180"
 									@input="${this._updateFormData}"
@@ -224,21 +224,21 @@ export class VisusComponent extends LitElement {
                                 <input
 									class="sphere-left input is-small is-small-input"
 									type="number"
-									placeholder="sphere"
+									placeholder="Sphäre"
 									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="cylinder-left input is-small is-small-input"
 									type="number"
-									placeholder="cylinder"
+									placeholder="Zylinder"
 									step="0.25"
 									@input="${this._updateFormData}"
 								/>
                                 <input
 									class="axis-left input is-small is-small-input"
 									type="number"
-									placeholder="axis"
+									placeholder="Achse"
 									min="0"
 									max="180"
 									@input="${this._updateFormData}"

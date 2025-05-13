@@ -62,9 +62,10 @@ export class FhirTableRenderer<T> extends LitElement {
 			} else {
 				result = ["typecasting error"];
 			}
-
+			console.log(result);
 			let resultList = [];
 			for (let resultElement of result) {
+				console.log(resultElement);
 				if (typeof resultElement === "string") {
 					resultList.push(resultElement);
 				} else if (resultElement.value) {
@@ -78,8 +79,8 @@ export class FhirTableRenderer<T> extends LitElement {
 				} else if (resultElement.system) {
 					resultList.push(`${resultElement.code.value} "${resultElement.display.value}"`);
 				} else if (
-					(resultElement.url =
-						"https://larfuma.github.io/fhir-eyecare-ig/StructureDefinition/LensDuringVATestSpecification")
+					resultElement.url ===
+					"https://larfuma.github.io/fhir-eyecare-ig/StructureDefinition/LensDuringVATestSpecification"
 				) {
 					resultList.push(
 						`(sphere: ${resultElement.extension[1].value}, cylinder: ${resultElement.extension[2].value}, axis: ${resultElement.extension[3].value})`

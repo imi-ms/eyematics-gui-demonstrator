@@ -41,7 +41,6 @@ const IOPMethod2Fhir = {
 
 export function tonometry2Fhir(data: TonometrieData): Observation[] {
 	let left = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -85,7 +84,6 @@ export function tonometry2Fhir(data: TonometrieData): Observation[] {
 	});
 
 	let right = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },

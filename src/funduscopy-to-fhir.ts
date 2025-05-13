@@ -5,7 +5,7 @@ import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValue
 import { Bundle, BundleEntry } from "@fhir-typescript/r4b-core/dist/fhir";
 import { getDiagnosticReport } from "./anterior-chamber-to-fhir.ts";
 
-const PresenceStatus2Fhir = {
+export const PresenceStatus2Fhir = {
 	[PresenceStatus.Present]: [snomed("52101004", "Present (qualifier value)")],
 	[PresenceStatus.Absent]: [snomed("2667000", "Absent (qualifier value)")],
 	[PresenceStatus.Unknown]: [snomed("261665006", "Unknown (qualifier value)")],
@@ -13,7 +13,7 @@ const PresenceStatus2Fhir = {
 
 export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	let papillEdemaLeft = new Observation({
-		resourceType: "Observation",
+		id: "papill-edema-left",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -31,7 +31,7 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	});
 
 	let macularEdemaLeft = new Observation({
-		resourceType: "Observation",
+		id: "macular-edema-left",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -49,7 +49,7 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	});
 
 	let vascuitisLeft = new Observation({
-		resourceType: "Observation",
+		id: "vascuitis-left",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -67,7 +67,6 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	});
 
 	let left = new Bundle({
-		resourceType: "Bundle",
 		type: "collection",
 		entry: [{ resource: papillEdemaLeft }, { resource: macularEdemaLeft }, { resource: vascuitisLeft }],
 	});
@@ -86,7 +85,7 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	}
 
 	let papillEdemaRight = new Observation({
-		resourceType: "Observation",
+		id: "papill-edema-right",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -104,7 +103,7 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	});
 
 	let macularEdemaRight = new Observation({
-		resourceType: "Observation",
+		id: "macular-edema-right",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -122,7 +121,7 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	});
 
 	let vascuitisRight = new Observation({
-		resourceType: "Observation",
+		id: "vascuitis-right",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -140,7 +139,6 @@ export function funduscopy2Fhir(data: FunduscopyData): Bundle[] {
 	});
 
 	let right = new Bundle({
-		resourceType: "Bundle",
 		type: "collection",
 		entry: [{ resource: papillEdemaRight }, { resource: macularEdemaRight }, { resource: vascuitisRight }],
 	});

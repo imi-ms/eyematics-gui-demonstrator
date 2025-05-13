@@ -100,7 +100,6 @@ const Optotype2Fhir = {
 
 export function visus2Fhir(data: VisusData): Observation[] {
 	let left = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -109,12 +108,12 @@ export function visus2Fhir(data: VisusData): Observation[] {
 			coding: [snomed("260246004", "Visual Acuity finding")],
 		},
 		effectiveDateTime: new Date(data.recordedDate).toISOString(),
-		...getVisusValue(data.leftEye.visus),
+		..._getVisusValue(data.leftEye.visus),
 		bodySite: {
 			coding: [snomed("1290041000", "Entire left eye proper (body structure)")],
 		},
 		component: [
-			getCorrectionMethod(data.correctionMethod, true, data.leftEye.lens),
+			_getCorrectionMethod(data.correctionMethod, true, data.leftEye.lens),
 			{
 				code: {
 					coding: [snomed("252124009", "Test distance")],
@@ -165,7 +164,6 @@ export function visus2Fhir(data: VisusData): Observation[] {
 	});
 
 	let right = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -174,12 +172,12 @@ export function visus2Fhir(data: VisusData): Observation[] {
 			coding: [snomed("260246004", "Visual Acuity finding")],
 		},
 		effectiveDateTime: new Date(data.recordedDate).toISOString(),
-		...getVisusValue(data.rightEye.visus),
+		..._getVisusValue(data.rightEye.visus),
 		bodySite: {
 			coding: [snomed("1290043002", "Entire right eye proper (body structure)")],
 		},
 		component: [
-			getCorrectionMethod(data.correctionMethod, false, data.rightEye.lens),
+			_getCorrectionMethod(data.correctionMethod, false, data.rightEye.lens),
 			{
 				code: {
 					coding: [snomed("252124009", "Test distance")],
@@ -232,7 +230,7 @@ export function visus2Fhir(data: VisusData): Observation[] {
 	return [left, right];
 }
 
-function getVisusValue(visus: string): Partial<ObservationArgs> {
+function _getVisusValue(visus: string): Partial<ObservationArgs> {
 	// decimal -> valueQuantity
 	if (visus.includes(",") || visus.includes(".")) {
 		visus = visus.replace(",", ".");
@@ -265,7 +263,7 @@ function getVisusValue(visus: string): Partial<ObservationArgs> {
 	throw new TypeError(`Der folgende Wert für den Visus ist ungültig: ${visus}`);
 }
 
-function getCorrectionMethod(
+function _getCorrectionMethod(
 	correctionMethod: CorrectionMethod,
 	leftEye: boolean,
 	lens?: { sphere: number; cylinder: number; axis: number }

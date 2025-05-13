@@ -1,0 +1,140 @@
+{
+	"resourceType": "Medication",
+	"id": "Bevacizumab",
+	"code": {
+		"coding": [
+			{
+				"system": "http://fhir.de/CodeSystem/ifa/pzn",
+				"version": "2025-04-24",
+				"code": "02687260",
+				"userSelected": false
+			},
+			{
+				"system": "http://fhir.de/CodeSystem/bfarm/atc",
+				"version": "2025-04-24",
+				"code": "L01XC07",
+				"display": "Bevacizumab",
+				"userSelected": false
+			}
+		],
+		"text": "Avastin 25 mg/ml CC Pharma Konzentrat zur Herstellung einer Infusionslösung, 4 ml"
+	},
+	"status": "active",
+	"manufacturer": {
+		"type": "Organization",
+		"identifier": {
+			"use": "temp",
+			"value": "13682"
+		},
+		"display": "CC Pharma GmbH"
+	},
+	"form": {
+		"coding": [
+			{
+				"system": "https://standardterms.edqm.eu",
+				"version": "2024-05-29",
+				"code": "11213000",
+				"display": "Concentrate for solution for infusion",
+				"userSelected": false
+			}
+		],
+		"text": "Concentrate for solution for infusion"
+	},
+	"amount": {
+		"numerator": {
+			"value": 4,
+			"unit": "ml",
+			"system": "http://unitsofmeasure.org",
+			"code": "ml"
+		},
+		"denominator": {
+			"value": 1,
+			"system": "http://unitsofmeasure.org",
+			"code": "1"
+		}
+	},
+	"ingredient": [
+		{
+			"id": "#ing_1",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "16819"
+				},
+				"display": "Wasser für Injektionszwecke"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_2",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "17427"
+				},
+				"display": "Natriumphosphat"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_3",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "24943"
+				},
+				"display": "Polysorbat 20"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_4",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "44826"
+				},
+				"display": "Trehalose-Dihydrat"
+			},
+			"isActive": false
+		},
+		{
+			"id": "#ing_5",
+			"itemReference": {
+				"type": "Substance",
+				"identifier": {
+					"use": "temp",
+					"value": "48613"
+				},
+				"display": "Bevacizumab"
+			},
+			"isActive": true,
+			"strength": {
+				"numerator": {
+					"value": 100,
+					"unit": "mg",
+					"system": "http://unitsofmeasure.org",
+					"code": "mg"
+				},
+				"denominator": {
+					"value": 1,
+					"system": "http://unitsofmeasure.org",
+					"code": "1"
+				}
+			}
+		}
+	],
+	"meta": {
+		"source": "https://www.mmi.de/mmi-pharmindex/mmi-pharmindex-daten"
+	},
+	"identifier": [
+		{
+			"use": "temp",
+			"value": "497908-13682"
+		}
+	]
+}

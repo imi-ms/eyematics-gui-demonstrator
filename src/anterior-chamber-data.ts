@@ -1,3 +1,5 @@
+import { PresenceStatus } from "./funduscopy-data";
+
 export enum SUNFlare {
 	Absent = "Absent",
 	One = "+",
@@ -20,11 +22,13 @@ export interface AnteriorChamberData {
 	rightEye: {
 		cells: SUNCells;
 		flare: SUNFlare;
+		synechiae: PresenceStatus;
 		note: string;
 	};
 	leftEye: {
 		cells: SUNCells;
 		flare: SUNFlare;
+		synechiae: PresenceStatus;
 		note: string;
 	};
 }

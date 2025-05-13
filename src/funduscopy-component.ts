@@ -228,23 +228,18 @@ export class FunduscopyComponent extends LitElement {
 		this.formData = {
 			recordedDate: this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value,
 			rightEye: {
-				papillEdema: this._getPresenceStatus("papillEdema-right"),
-				macularEdema: this._getPresenceStatus("macularEdema-right"),
-				vascuitis: this._getPresenceStatus("vascuitis-right"),
+				papillEdema: getPresenceStatus(this.renderRoot, "papillEdema-right"),
+				macularEdema: getPresenceStatus(this.renderRoot, "macularEdema-right"),
+				vascuitis: getPresenceStatus(this.renderRoot, "vascuitis-right"),
 				note: this.renderRoot.querySelector<HTMLInputElement>(".note-right")?.value,
 			},
 			leftEye: {
-				papillEdema: this._getPresenceStatus("papillEdema-left"),
-				macularEdema: this._getPresenceStatus("macularEdema-left"),
-				vascuitis: this._getPresenceStatus("vascuitis-left"),
+				papillEdema: getPresenceStatus(this.renderRoot, "papillEdema-left"),
+				macularEdema: getPresenceStatus(this.renderRoot, "macularEdema-left"),
+				vascuitis: getPresenceStatus(this.renderRoot, "vascuitis-left"),
 				note: this.renderRoot.querySelector<HTMLInputElement>(".note-left")?.value,
 			},
 		};
-	}
-
-	private _getPresenceStatus(name: string) {
-		let result = this.shadowRoot.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`);
-		return result ? PresenceStatus[result.value] : PresenceStatus.Unknown;
 	}
 
 	private _validateInput() {
@@ -313,4 +308,9 @@ export class FunduscopyComponent extends LitElement {
 			}
 		`,
 	];
+}
+
+export function getPresenceStatus(root: HTMLElement | DocumentFragment, name: string) {
+	let result = root.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`);
+	return result ? PresenceStatus[result.value] : PresenceStatus.Unknown;
 }

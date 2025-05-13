@@ -4,6 +4,7 @@ import { snomed, loinc } from "./tonometry-to-fhir.ts";
 import { ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/fhirValueSets/ObservationStatusCodes";
 import { Bundle, BundleEntry, DiagnosticReport, Reference } from "@fhir-typescript/r4b-core/dist/fhir";
 import { AnteriorChamberData, SUNCells, SUNFlare } from "./anterior-chamber-data.ts";
+import { PresenceStatus2Fhir } from "./funduscopy-to-fhir.ts";
 
 const SUNFlare2Fhir = {
 	[SUNFlare.Absent]: [snomed("2667000", "Absent (qualifier value)")],
@@ -26,7 +27,6 @@ const SUNCells2Fhir = {
 
 export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 	let cellsLeft = new Observation({
-		resourceType: "Observation",
 		id: "cells-left",
 		status: ObservationStatusCodes.Final,
 		category: [
@@ -45,7 +45,6 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 	});
 
 	let flareLeft = new Observation({
-		resourceType: "Observation",
 		id: "flare-left",
 		status: ObservationStatusCodes.Final,
 		category: [
@@ -63,10 +62,27 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 		},
 	});
 
+	let synechiaeLeft = new Observation({
+		id: "synechiae-left",
+		status: ObservationStatusCodes.Final,
+		category: [
+			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
+		],
+		code: {
+			coding: [snomed("78778007", "Adhesions of iris (disorder)")],
+		},
+		effectiveDateTime: new Date(data.recordedDate).toISOString(),
+		valueCodeableConcept: {
+			coding: PresenceStatus2Fhir[data.leftEye.synechiae],
+		},
+		bodySite: {
+			coding: [snomed("1290041000", "Entire left eye proper (body structure)")],
+		},
+	});
+
 	let left = new Bundle({
-		resourceType: "Bundle",
 		type: "collection",
-		entry: [{ resource: cellsLeft }, { resource: flareLeft }],
+		entry: [{ resource: cellsLeft }, { resource: flareLeft }, { resource: synechiaeLeft }],
 	});
 
 	// add optional note for left eye if present
@@ -79,7 +95,6 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 	}
 
 	let cellsRight = new Observation({
-		resourceType: "Observation",
 		id: "cells-right",
 		status: ObservationStatusCodes.Final,
 		category: [
@@ -98,7 +113,6 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 	});
 
 	let flareRight = new Observation({
-		resourceType: "Observation",
 		id: "flare-right",
 		status: ObservationStatusCodes.Final,
 		category: [
@@ -116,10 +130,27 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 		},
 	});
 
+	let synechiaeRight = new Observation({
+		id: "synechiae-right",
+		status: ObservationStatusCodes.Final,
+		category: [
+			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
+		],
+		code: {
+			coding: [snomed("78778007", "Adhesions of iris (disorder)")],
+		},
+		effectiveDateTime: new Date(data.recordedDate).toISOString(),
+		valueCodeableConcept: {
+			coding: PresenceStatus2Fhir[data.rightEye.synechiae],
+		},
+		bodySite: {
+			coding: [snomed("1290043002", "Entire right eye proper (body structure)")],
+		},
+	});
+
 	let right = new Bundle({
-		resourceType: "Bundle",
 		type: "collection",
-		entry: [{ resource: cellsRight }, { resource: flareRight }],
+		entry: [{ resource: cellsRight }, { resource: flareRight }, { resource: synechiaeRight }],
 	});
 
 	// add optional note for right eye if present
@@ -136,7 +167,6 @@ export function anteriorChamber2Fhir(data: AnteriorChamberData): Bundle[] {
 
 export function getDiagnosticReport(date: string, note: string, results: Observation[]) {
 	return new DiagnosticReport({
-		resourceType: "DiagnosticReport",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{
@@ -148,6 +178,6 @@ export function getDiagnosticReport(date: string, note: string, results: Observa
 		},
 		effectiveDateTime: new Date(date).toISOString(),
 		conclusion: note,
-		result: results.map((r) => new Reference({ reference: `Observation/${r.id}` })),
+		result: results.map((r) => new Reference({ reference: `${r.resourceType}/${r.id}` })),
 	});
 }

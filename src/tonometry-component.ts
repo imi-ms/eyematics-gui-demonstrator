@@ -3,6 +3,9 @@ import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { IOPMethod, TonometrieData } from "./tonometry-data.ts";
 
+const mainIOPMethods = Object.entries(IOPMethod).slice(0, 14);
+const extraIOPMethods = Object.entries(IOPMethod).slice(14);
+
 @customElement("tonometry-component")
 export class TonometryComponent extends LitElement {
 	@state()
@@ -18,6 +21,9 @@ export class TonometryComponent extends LitElement {
 
 	@state()
 	private validationMessage: string = "";
+
+	@state()
+	private expandIOPMethod = false;
 
 	render() {
 		this._validateInput();
@@ -42,14 +48,38 @@ export class TonometryComponent extends LitElement {
 							</div>
 							<div class="control">
 								<div class="select is-small">
-									<select class="iopMethod" @change="${this._updateFormData}">
-										${Object.entries(IOPMethod).map(
+									<select
+										class="iopMethod"
+										@change="${(e: Event) => {
+											let element = e.target as HTMLSelectElement;
+											let value = element.value;
+
+											if (!["more", "less"].includes(value)) {
+												this._updateFormData();
+												return;
+											}
+
+											this.expandIOPMethod = value === "more";
+											setTimeout(() => element.showPicker(), 100);
+										}}"
+									>
+										${mainIOPMethods.map(
 											([key, value]) => html`
 												<option value="${key}" ?selected=${this.formData.iopMethod === value}>
 													${value}
 												</option>
 											`
 										)}
+										${!this.expandIOPMethod
+											? html`<option value="more">See More ↓</option>`
+											: html`
+													${extraIOPMethods.map(
+														([key, value]) => html`
+															<option value="${key}">${value}</option>
+														`
+													)}
+													<option value="less">See less ↑</option>
+											  `}
 									</select>
 								</div>
 							</div>

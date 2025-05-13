@@ -66,7 +66,6 @@ const RNFLMap2Fhir = {
 
 export function oct2Fhir(data: OCTData): Bundle[] {
 	let retinalThicknessLeft = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -87,7 +86,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	});
 
 	let opticDiscDiameterLeft = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -108,7 +106,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	});
 
 	let rnflThicknessLeft = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -146,7 +143,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 				];
 
 		imagingStudyLeft = new ImagingStudy({
-			resourceType: "ImagingStudy",
 			id: imagingStudyIDLeft,
 			status: ObservationStatusCodes.Final,
 			description: "OCT scan image for analysis of left eye",
@@ -176,7 +172,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 				});
 
 		deviceLeft = new Device({
-			resourceType: "Device",
 			id: deviceIDLeft,
 			status: ObservationStatusCodes.Final,
 			manufacturer: data.leftEye.dicomData.manufacturer,
@@ -198,7 +193,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	}
 
 	let left = new Bundle({
-		resourceType: "Bundle",
 		type: "collection",
 		entry: [
 			{ resource: retinalThicknessLeft },
@@ -218,7 +212,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	}
 
 	let retinalThicknessRight = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -239,7 +232,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	});
 
 	let opticDiscDiameterRight = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -260,7 +252,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	});
 
 	let rnflThicknessRight = new Observation({
-		resourceType: "Observation",
 		status: ObservationStatusCodes.Final,
 		category: [
 			{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
@@ -298,7 +289,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 				];
 
 		imagingStudyRight = new ImagingStudy({
-			resourceType: "ImagingStudy",
 			id: imagingStudyIDRight,
 			status: ObservationStatusCodes.Final,
 			description: "OCT scan image for analysis of right eye",
@@ -328,7 +318,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 				});
 
 		deviceRight = new Device({
-			resourceType: "Device",
 			id: deviceIDRight,
 			status: ObservationStatusCodes.Final,
 			manufacturer: data.rightEye.dicomData.manufacturer,
@@ -350,7 +339,6 @@ export function oct2Fhir(data: OCTData): Bundle[] {
 	}
 
 	let right = new Bundle({
-		resourceType: "Bundle",
 		type: "collection",
 		entry: [
 			{ resource: retinalThicknessRight },

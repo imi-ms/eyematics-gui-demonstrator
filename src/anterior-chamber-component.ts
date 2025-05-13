@@ -2,6 +2,8 @@ import { customElement, state } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { AnteriorChamberData, SUNCells, SUNFlare } from "./anterior-chamber-data.ts";
+import { PresenceStatus } from "./funduscopy-data.ts";
+import { getPresenceStatus } from "./funduscopy-component.ts";
 
 @customElement("anterior-chamber-component")
 export class AnteriorChamberComponent extends LitElement {
@@ -11,11 +13,13 @@ export class AnteriorChamberComponent extends LitElement {
 		rightEye: {
 			cells: null,
 			flare: null,
+			synechiae: PresenceStatus.Unknown,
 			note: "",
 		},
 		leftEye: {
 			cells: null,
 			flare: null,
+			synechiae: PresenceStatus.Unknown,
 			note: "",
 		},
 	};
@@ -93,6 +97,27 @@ export class AnteriorChamberComponent extends LitElement {
                                     </div>
                                 </div>
                             </div>
+							<label class="label">Liegen Synechien vor?</label>
+                            <div class="inputs-inline">
+                                <label class="radio">
+                                    <input
+                                        type="radio"
+                                        name="synechiae-right"
+                                        value="Present"
+                                        @input="${this._updateFormData}"
+                                    />
+                                    <span class="checkbox-label">Ja</span>
+                                </label>
+                                <label class="radio">
+                                    <input
+                                        type="radio"
+                                        name="synechiae-right"
+                                        value="Absent"
+                                        @input="${this._updateFormData}"
+                                    />
+                                    <span class="checkbox-label">Nein</span>
+                                </label>
+                            </div>
                             <label class="label">Zusätzliche Befunde:</label>
                             <div class="field">
                                 <div class="control">
@@ -146,6 +171,27 @@ export class AnteriorChamberComponent extends LitElement {
                                     </div>
                                 </div>
                             </div>
+							<label class="label">Liegen Synechien vor?</label>
+                            <div class="inputs-inline">
+                                <label class="radio">
+                                    <input
+                                        type="radio"
+                                        name="synechiae-left"
+                                        value="Present"
+                                        @input="${this._updateFormData}"
+                                    />
+                                    <span class="checkbox-label">Ja</span>
+                                </label>
+                                <label class="radio">
+                                    <input
+                                        type="radio"
+                                        name="synechiae-left"
+                                        value="Absent"
+                                        @input="${this._updateFormData}"
+                                    />
+                                    <span class="checkbox-label">Nein</span>
+                                </label>
+                            </div>
                             <label class="label">Zusätzliche Befunde:</label>
                             <div class="field">
                                 <div class="control">
@@ -176,11 +222,13 @@ export class AnteriorChamberComponent extends LitElement {
 			rightEye: {
 				cells: SUNCells[this.renderRoot.querySelector<HTMLSelectElement>(".cells-right")?.value],
 				flare: SUNFlare[this.renderRoot.querySelector<HTMLSelectElement>(".flare-right")?.value],
+				synechiae: getPresenceStatus(this.renderRoot, "synechiae-right"),
 				note: this.renderRoot.querySelector<HTMLInputElement>(".note-right")?.value,
 			},
 			leftEye: {
 				cells: SUNCells[this.renderRoot.querySelector<HTMLSelectElement>(".cells-left")?.value],
 				flare: SUNFlare[this.renderRoot.querySelector<HTMLSelectElement>(".flare-left")?.value],
+				synechiae: getPresenceStatus(this.renderRoot, "synechiae-left"),
 				note: this.renderRoot.querySelector<HTMLInputElement>(".note-left")?.value,
 			},
 		};

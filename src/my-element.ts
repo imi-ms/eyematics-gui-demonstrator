@@ -19,6 +19,10 @@ import { OCTComponent } from "./oct-component.ts";
 import { oct2Fhir } from "./oct-to-fhir.ts";
 import { AnteriorChamberComponent } from "./anterior-chamber-component.ts";
 import { anteriorChamber2Fhir } from "./anterior-chamber-to-fhir.ts";
+import { IVIComponent } from "./ivi-component.ts";
+import { ivi2Fhir } from "./ivi-to-fhir.ts";
+import { AnteriorChamberData } from "./anterior-chamber-data.ts";
+import { IVIData } from "./ivi-data.ts";
 
 @customElement("my-element")
 export class MyElement extends LitElement {
@@ -30,6 +34,9 @@ export class MyElement extends LitElement {
 
 	@state()
 	private visusData: Observation[] = [];
+
+	@state()
+	private iviData: Bundle[] = [];
 
 	@state()
 	private anteriorChamberData: Bundle[] = [];
@@ -63,11 +70,19 @@ export class MyElement extends LitElement {
 		"Stenopäische Lücke": "Observation.component.where(code.coding.code.value='257492003').value.coding",
 	};
 
-	private columnMapAnteriorChamber: ColumnConfig<FunduscopyData> = {
+	private columnMapIVI: ColumnConfig<IVIData> = {
+		Verordnungszeitpunkt: "Bundle.entry.resource.authoredOn",
+		Seitigkeit: "Bundle.entry.resource.dosageInstruction.site.coding",
+		Medikament: "Bundle.entry.resource.where(resourceType='Medication').code.text",
+		Intervall: "Bundle.entry.resource.dosageInstruction.timing.repeat",
+		note: "Bundle.entry.resource.note.text.value",
+	};
+
+	private columnMapAnteriorChamber: ColumnConfig<AnteriorChamberData> = {
 		Diagnosezeitpunkt: "Bundle.entry.resource.effective[0]",
 		Seitigkeit: "Bundle.entry.resource.bodySite.coding[0]",
 		Code: "Bundle.entry.resource.code.coding",
-		"SUN Grad": "Bundle.entry.resource.value.coding",
+		Status: "Bundle.entry.resource.value.coding",
 		Befunde: "Bundle.entry.resource.where(resourceType='DiagnosticReport').conclusion",
 	};
 
@@ -91,6 +106,7 @@ export class MyElement extends LitElement {
 		//do not treeshake
 		new TonometryComponent();
 		new VisusComponent();
+		new IVIComponent();
 		new AnteriorChamberComponent();
 		new FunduscopyComponent();
 		new OCTComponent();
@@ -112,6 +128,13 @@ export class MyElement extends LitElement {
 						id="visusTab"
 					>
 						<a>Visus</a>
+					</li>
+					<li
+						class="${classMap({ "is-active": this.activeTab === "iviTab" })}"
+						@click=${this._onClick}
+						id="iviTab"
+					>
+						<a>IVOM</a>
 					</li>
 					<li
 						class="${classMap({ "is-active": this.activeTab === "anteriorChamberTab" })}"
@@ -154,6 +177,9 @@ export class MyElement extends LitElement {
 					.columnMap="${this.columnMapVisus}"
 					.data="${this.visusData}"
 				></fhir-table-renderer>`;
+		} else if (this.activeTab == "iviTab") {
+			return html` <ivi-component @add-observation="${this._handleAdd}"></ivi-component>
+				<fhir-table-renderer .columnMap="${this.columnMapIVI}" .data="${this.iviData}"></fhir-table-renderer>`;
 		} else if (this.activeTab == "anteriorChamberTab") {
 			return html` <anterior-chamber-component @add-observation="${this._handleAdd}"></anterior-chamber-component>
 				<fhir-table-renderer
@@ -176,11 +202,13 @@ export class MyElement extends LitElement {
 		this.activeTab = (e.currentTarget as Element).id;
 	}
 
-	private _handleAdd(e: CustomEvent) {
+	private async _handleAdd(e: CustomEvent) {
 		if (this.activeTab == "tonometryTab") {
 			this.tonometryData = [...this.tonometryData, ...tonometry2Fhir(e.detail)];
 		} else if (this.activeTab == "visusTab") {
 			this.visusData = [...this.visusData, ...visus2Fhir(e.detail)];
+		} else if (this.activeTab == "iviTab") {
+			this.iviData = [...this.iviData, ...(await ivi2Fhir(e.detail))];
 		} else if (this.activeTab == "anteriorChamberTab") {
 			this.anteriorChamberData = [...this.anteriorChamberData, ...anteriorChamber2Fhir(e.detail)];
 		} else if (this.activeTab == "funduscopyTab") {
