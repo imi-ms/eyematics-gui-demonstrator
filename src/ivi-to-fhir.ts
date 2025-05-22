@@ -57,6 +57,11 @@ export async function ivi2Fhir(data: IVIData): Promise<Bundle[]> {
 						},
 					},
 					asNeededBoolean: data.leftEye.treatment.regimen === IVIRegimen.PRN,
+					route: {
+						coding: [
+							{ system: "http://standardterms.edqm.eu", code: "20047000", display: "Intravitreal use" },
+						],
+					},
 					extension: [
 						{
 							url: "https://eyematics.org/fhir/eyematics-kds/StructureDefinition/extension-ivi-treatment-regimen",
@@ -104,6 +109,11 @@ export async function ivi2Fhir(data: IVIData): Promise<Bundle[]> {
 						},
 					},
 					asNeededBoolean: data.rightEye.treatment.regimen === IVIRegimen.PRN,
+					route: {
+						coding: [
+							{ system: "http://standardterms.edqm.eu", code: "20047000", display: "Intravitreal use" },
+						],
+					},
 					extension: [
 						{
 							url: "https://eyematics.org/fhir/eyematics-kds/StructureDefinition/extension-ivi-treatment-regimen",
