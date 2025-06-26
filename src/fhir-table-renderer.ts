@@ -62,10 +62,9 @@ export class FhirTableRenderer<T> extends LitElement {
 			} else {
 				result = ["typecasting error"];
 			}
-			console.log(result);
+
 			let resultList = [];
 			for (let resultElement of result) {
-				console.log(resultElement);
 				if (typeof resultElement === "string") {
 					resultList.push(resultElement);
 				} else if (resultElement.value) {

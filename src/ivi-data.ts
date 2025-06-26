@@ -10,6 +10,7 @@ export enum IVIMedication {
 }
 
 export enum IVIRegimen {
+	Initial = "Loading-Phase",
 	Fixed = "Fixed Interval",
 	PRN = "Pro Re Nata",
 	TE = "Treat-and-Extend",
@@ -19,20 +20,16 @@ export interface IVIData {
 	recordedDate: string;
 	rightEye: {
 		medication: IVIMedication;
-		treatment: {
-			regimen: IVIRegimen;
-			min: number;
-			max: number;
-		};
+		regimen: IVIRegimen;
+		visus: boolean;
+		appointments: number[];
 		note: string;
 	};
 	leftEye: {
 		medication: IVIMedication;
-		treatment: {
-			regimen: IVIRegimen;
-			min: number;
-			max: number;
-		};
+		regimen: IVIRegimen;
+		visus: boolean;
+		appointments: number[];
 		note: string;
 	};
 }

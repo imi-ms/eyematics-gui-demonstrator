@@ -71,10 +71,9 @@ export class MyElement extends LitElement {
 	};
 
 	private columnMapIVI: ColumnConfig<IVIData> = {
-		Verordnungszeitpunkt: "Bundle.entry.resource.authoredOn",
-		Seitigkeit: "Bundle.entry.resource.dosageInstruction.site.coding",
+		Verordnungszeitpunkt: "Bundle.entry.resource.effective",
+		Seitigkeit: "Bundle.entry.resource.dosage.site.coding",
 		Medikament: "Bundle.entry.resource.where(resourceType='Medication').code.text",
-		Intervall: "Bundle.entry.resource.dosageInstruction.timing.repeat",
 		note: "Bundle.entry.resource.note.text.value",
 	};
 

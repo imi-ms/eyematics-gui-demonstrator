@@ -1,11 +1,8 @@
-import { Bundle, Medication, MedicationRequest, Reference } from "@fhir-typescript/r4b-core/dist/fhir";
+import { Bundle, Medication, MedicationAdministration, Reference } from "@fhir-typescript/r4b-core/dist/fhir";
 import { IVIData, IVIMedication, IVIRegimen } from "./ivi-data.ts";
 import { snomed } from "./tonometry-to-fhir.ts";
-import {
-	MedicationrequestIntentCodes,
-	MedicationrequestStatusCodes,
-} from "@fhir-typescript/r4b-core/dist/valueSetCodes";
-import { isValidMedReq } from "./ivi-component.ts";
+import { MedicationAdminStatusCodes } from "@fhir-typescript/r4b-core/dist/valueSetCodes";
+import { isValidMedicationAdmin } from "./ivi-component.ts";
 
 const Medication2Fhir = {
 	[IVIMedication.Af2]: "",
@@ -30,48 +27,37 @@ export async function ivi2Fhir(data: IVIData): Promise<Bundle[]> {
 	let result = [];
 	let patientID = crypto.randomUUID();
 
-	if (isValidMedReq(data.leftEye)) {
+	if (isValidMedicationAdmin(data.leftEye)) {
 		let medicationLeft = await _load_medication(data.leftEye.medication);
 
-		let medReqLeft = new MedicationRequest({
-			status: MedicationrequestStatusCodes.Active,
-			intent: MedicationrequestIntentCodes.Order,
+		let medReqLeft = new MedicationAdministration({
+			status: MedicationAdminStatusCodes.Completed,
 			medication: new Reference({
 				reference: `IVIMedication/${medicationLeft.id}`,
 				display: "Prescribed Medication",
 			}),
 			subject: new Reference({ reference: `Patient/${patientID}`, display: "Treated Patient" }),
-			authoredOn: new Date(data.recordedDate).toISOString(),
+			effectiveDateTime: new Date(data.recordedDate).toISOString(),
 			note: [
 				{
 					text: data.leftEye.note,
 				},
 			],
-			dosageInstruction: [
-				{
-					site: { coding: [snomed("1290041000", "Entire left eye proper (body structure)")] },
-					timing: {
-						repeat: {
-							period: data.leftEye.treatment.min,
-							periodMax: data.leftEye.treatment.max,
-						},
-					},
-					asNeededBoolean: data.leftEye.treatment.regimen === IVIRegimen.PRN,
-					route: {
-						coding: [
-							{ system: "http://standardterms.edqm.eu", code: "20047000", display: "Intravitreal use" },
-						],
-					},
-					extension: [
-						{
-							url: "https://eyematics.org/fhir/eyematics-kds/StructureDefinition/extension-ivi-treatment-regimen",
-							valueCodeableConcept: {
-								coding: Regimen2Fhir[data.leftEye.treatment.regimen],
-							},
-						},
-					],
+			dosage: {
+				site: { coding: [snomed("1290041000", "Entire left eye proper (body structure)")] },
+				route: {
+					coding: [{ system: "http://standardterms.edqm.eu", code: "20047000", display: "Intravitreal use" }],
 				},
-			],
+				dose: {
+					value: medicationLeft.amount.numerator.value.value / medicationLeft.amount.denominator.value.value,
+					unit: medicationLeft.amount.numerator.unit,
+					system: medicationLeft.amount.numerator.system,
+					code: medicationLeft.amount.numerator.code,
+				},
+				rateQuantity: {
+					value: 1,
+				},
+			},
 		});
 
 		let left = new Bundle({
@@ -82,48 +68,37 @@ export async function ivi2Fhir(data: IVIData): Promise<Bundle[]> {
 		result.push(left);
 	}
 
-	if (isValidMedReq(data.rightEye)) {
+	if (isValidMedicationAdmin(data.rightEye)) {
 		let medicationRight = await _load_medication(data.rightEye.medication);
 
-		let medReqRight = new MedicationRequest({
-			status: MedicationrequestStatusCodes.Active,
-			intent: MedicationrequestIntentCodes.Order,
+		let medReqRight = new MedicationAdministration({
+			status: MedicationAdminStatusCodes.Completed,
 			medication: new Reference({
 				reference: `IVIMedication/${medicationRight.id}`,
 				display: "Prescribed Medication",
 			}),
 			subject: new Reference({ reference: `Patient/${patientID}`, display: "Treated Patient" }),
-			authoredOn: new Date(data.recordedDate).toISOString(),
+			effectiveDateTime: new Date(data.recordedDate).toISOString(),
 			note: [
 				{
-					text: data.rightEye.note,
+					text: data.leftEye.note,
 				},
 			],
-			dosageInstruction: [
-				{
-					site: { coding: [snomed("1290043002", "Entire right eye proper (body structure)")] },
-					timing: {
-						repeat: {
-							period: data.rightEye.treatment.min,
-							periodMax: data.rightEye.treatment.max,
-						},
-					},
-					asNeededBoolean: data.rightEye.treatment.regimen === IVIRegimen.PRN,
-					route: {
-						coding: [
-							{ system: "http://standardterms.edqm.eu", code: "20047000", display: "Intravitreal use" },
-						],
-					},
-					extension: [
-						{
-							url: "https://eyematics.org/fhir/eyematics-kds/StructureDefinition/extension-ivi-treatment-regimen",
-							valueCodeableConcept: {
-								coding: Regimen2Fhir[data.rightEye.treatment.regimen],
-							},
-						},
-					],
+			dosage: {
+				site: { coding: [snomed("1290043002", "Entire right eye proper (body structure)")] },
+				route: {
+					coding: [{ system: "http://standardterms.edqm.eu", code: "20047000", display: "Intravitreal use" }],
 				},
-			],
+				dose: {
+					value: medicationRight.amount.numerator.value,
+					unit: medicationRight.amount.numerator.unit,
+					system: medicationRight.amount.numerator.system,
+					code: medicationRight.amount.numerator.code,
+				},
+				rateQuantity: {
+					value: 1,
+				},
+			},
 		});
 
 		let right = new Bundle({

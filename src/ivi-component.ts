@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { bulmaStyles } from "./bulma-styles.ts";
 import { IVIData, IVIMedication, IVIRegimen } from "./ivi-data.ts";
 import { getNumberOrNull } from "./tonometry-component.ts";
-import { MedicationRequest } from "@fhir-typescript/r4b-core/dist/fhir";
+import { Console } from "console";
 
 @customElement("ivi-component")
 export class IVIComponent extends LitElement {
@@ -11,21 +11,17 @@ export class IVIComponent extends LitElement {
 	private formData: IVIData = {
 		recordedDate: new Date().toISOString().slice(0, 16),
 		rightEye: {
-			medication: IVIMedication.Be,
-			treatment: {
-				regimen: IVIRegimen.Fixed,
-				min: null,
-				max: null,
-			},
+			medication: null,
+			regimen: null,
+			visus: false,
+			appointments: [],
 			note: "",
 		},
 		leftEye: {
-			medication: IVIMedication.Be,
-			treatment: {
-				regimen: IVIRegimen.Fixed,
-				min: null,
-				max: null,
-			},
+			medication: null,
+			regimen: null,
+			visus: false,
+			appointments: [],
 			note: "",
 		},
 	};
@@ -35,6 +31,14 @@ export class IVIComponent extends LitElement {
 
 	@state()
 	private validationMessage: string = "";
+
+	private _max_weeks: number = 20;
+
+	@state()
+	private _weeks_left: number[] = [null, null, null];
+
+	@state()
+	private _weeks_right: number[] = [null, null, null];
 
 	render() {
 		this._validateInput();
@@ -50,8 +54,8 @@ export class IVIComponent extends LitElement {
                         <div class="field is-grouped">
                             <div class="control">
                                 <input 
-                                    class="recordedDate input is-small" 
-                                    type="datetime-local" 
+                                    class="recordedDate input is-small"
+                                    type="datetime-local"
                                     placeholder="Messzeitpunkt (Default: Jetzt)"
                                     .value="${this.formData.recordedDate}"
                                     @input="${this._updateFormData}"
@@ -67,8 +71,9 @@ export class IVIComponent extends LitElement {
                             <div class="field-label">Rechtes Auge</div>
                             <div class="field is-grouped">
                                 <div class="control">
-                                    <div class="select is-small">
-                                        <select class="medication-right" @change="${this._updateFormData}">
+                                    <div class="treatment-input select is-small">
+                                        <select class="medication-right" required @change="${this._updateFormData}">
+										<option value="" disabled selected hidden>Medikament</option>
                                         ${Object.entries(IVIMedication)
 											.slice(2, 4)
 											.map(
@@ -87,13 +92,14 @@ export class IVIComponent extends LitElement {
 							</div>
 							<div class="field is-grouped">
 								<div class="control">
-                                    <div class="select is-small">
-                                        <select class="regimen-right" @change="${this._updateFormData}">
+                                    <div class="treatment-input select is-small">
+                                        <select class="regimen-right" required @change="${this._updateFormData}">
+										<option value="" disabled selected hidden>Therapie</option>
                                         ${Object.entries(IVIRegimen).map(
 											([key, value]) => html`
 												<option
 													value="${key}"
-													?selected=${this.formData.rightEye.treatment.regimen === value}
+													?selected=${this.formData.rightEye.regimen === value}
 												>
 													${value}
 												</option>
@@ -102,44 +108,45 @@ export class IVIComponent extends LitElement {
                                         </select>
                                     </div>
                                 </div>
-								${
-									this.formData.rightEye.treatment.regimen === IVIRegimen.Fixed
-										? html`
-												<div class="control">
-													<input
-														class="interval-right input is-small"
-														type="number"
-														min="0"
-														step="1"
-														placeholder="Intervall (in Wochen)"
-														@input="${this._updateFormData}"
-													/>
-												</div>
-										  `
-										: html`
-												<div class="control is-expanded">
-													<input
-														class="min-right input is-small"
-														type="number"
-														min="0"
-														step="1"
-														placeholder="Min. Abstand (in Wochen)"
-														@input="${this._updateFormData}"
-													/>
-												</div>
-												<div class="control is-expanded">
-													<input
-														class="max-right input is-small"
-														type="number"
-														min="0"
-														step="1"
-														placeholder="Max. Abstand (in Wochen)"
-														@input="${this._updateFormData}"
-													/>
-												</div>
-										  `
-								}
                             </div>
+							<div class="inputs-inline">
+								<label class="checkbox">
+									<input class="visus-right" type="checkbox" @input="${this._updateFormData}" />
+									<span class="checkbox-label"> Handbewegungen sichtbar</span>
+								</label>
+							</div>
+							<label class="label">Nächste Spritze(n):</label>
+							<div class="inputs-inline">
+								${[0, 1, 2].map(
+									(i) => html`
+										<label class="label">${i + 1}.</label>
+										<div class="appointment-input control">
+											<div class="appointment-input select is-small">
+												<select
+													class="appointment-${i}-right"
+													.value="${this._weeks_right[i]}"
+													required
+													@change="${(e: Event) =>
+														this._handleAppointmentChange("right", i, e)}"
+												>
+													${this._weeks_right[i]
+														? html`<option value="">Löschen</option>`
+														: html`<option value="" disabled selected hidden>
+																Optional
+														  </option>`}
+													${Array.from({ length: this._max_weeks }, (_, i) => i + 1).map(
+														(week) => html`
+															<option value="${week}">
+																${week} Woche${week > 1 ? "n" : ""}
+															</option>
+														`
+													)}
+												</select>
+											</div>
+										</div>
+									`
+								)}
+							</div>
                             <label class="label">Zusätzliche Notizen:</label>
                             <div class="field">
                                 <div class="control">
@@ -157,8 +164,9 @@ export class IVIComponent extends LitElement {
                             <div class="field-label">Linkes Auge</div>
                             <div class="field is-grouped">
                                 <div class="control">
-                                    <div class="select is-small">
-                                        <select class="medication-left" @change="${this._updateFormData}">
+                                    <div class="treatment-input select is-small">
+                                        <select class="medication-left" required @change="${this._updateFormData}">
+										<option value="" disabled selected hidden>Medikament</option>
                                         ${Object.entries(IVIMedication)
 											.slice(2, 4)
 											.map(
@@ -177,13 +185,14 @@ export class IVIComponent extends LitElement {
 							</div>
 							<div class="field is-grouped">
 								<div class="control">
-                                    <div class="select is-small">
-                                        <select class="regimen-left" @change="${this._updateFormData}">
+                                    <div class="treatment-input select is-small">
+                                        <select class="regimen-left" required @change="${this._updateFormData}">
+										<option value="" disabled selected hidden>Therapie</option>
                                         ${Object.entries(IVIRegimen).map(
 											([key, value]) => html`
 												<option
 													value="${key}"
-													?selected=${this.formData.leftEye.treatment.regimen === value}
+													?selected=${this.formData.leftEye.regimen === value}
 												>
 													${value}
 												</option>
@@ -192,38 +201,45 @@ export class IVIComponent extends LitElement {
                                         </select>
                                     </div>
                                 </div>
-								${
-									this.formData.leftEye.treatment.regimen === IVIRegimen.Fixed
-										? html`
-												<div class="control">
-													<input
-														class="interval-left input is-small"
-														type="number"
-														placeholder="Intervall (in Wochen)"
-														@input="${this._updateFormData}"
-													/>
-												</div>
-										  `
-										: html`
-												<div class="control is-expanded">
-													<input
-														class="min-left input is-small"
-														type="number"
-														placeholder="Min. Abstand (in Wochen)"
-														@input="${this._updateFormData}"
-													/>
-												</div>
-												<div class="control is-expanded">
-													<input
-														class="max-left input is-small"
-														type="number"
-														placeholder="Max. Abstand (in Wochen)"
-														@input="${this._updateFormData}"
-													/>
-												</div>
-										  `
-								}
                             </div>
+							<div class="inputs-inline">
+								<label class="checkbox">
+									<input class="visus-left" type="checkbox" @input="${this._updateFormData}" />
+									<span class="checkbox-label"> Handbewegungen sichtbar</span>
+								</label>
+							</div>
+							<label class="label">Nächste Spritze(n):</label>
+							<div class="inputs-inline">
+								${[0, 1, 2].map(
+									(i) => html`
+										<label class="label">${i + 1}.</label>
+										<div class="appointment-input control">
+											<div class="appointment-input select is-small">
+												<select
+													class="appointment-${i}-left"
+													.value="${this._weeks_left[i]}"
+													required
+													@change="${(e: Event) =>
+														this._handleAppointmentChange("left", i, e)}"
+												>
+													${this._weeks_left[i]
+														? html`<option value="">Löschen</option>`
+														: html`<option value="" disabled selected hidden>
+																Optional
+														  </option>`}
+													${Array.from({ length: this._max_weeks }, (_, i) => i + 1).map(
+														(week) => html`
+															<option value="${week}">
+																${week} Woche${week > 1 ? "n" : ""}
+															</option>
+														`
+													)}
+												</select>
+											</div>
+										</div>
+									`
+								)}
+							</div>
                             <label class="label">Zusätzliche Notizen:</label>
                             <div class="field">
                                 <div class="control">
@@ -248,40 +264,37 @@ export class IVIComponent extends LitElement {
         `;
 	}
 
-	private _updateFormData() {
-		let regimenRight = IVIRegimen[this.renderRoot.querySelector<HTMLSelectElement>(".regimen-right")?.value];
-		let regimenLeft = IVIRegimen[this.renderRoot.querySelector<HTMLSelectElement>(".regimen-left")?.value];
+	private _handleAppointmentChange(side: "left" | "right", index: number, e: Event) {
+		const values = side === "left" ? this._weeks_left : this._weeks_right;
+		const newValues = [...values];
 
+		let value = (e.target as HTMLSelectElement).value;
+		newValues[index] = !value ? null : +value.split(" ")[0];
+
+		if (side === "left") {
+			this._weeks_left = newValues;
+		} else {
+			this._weeks_right = newValues;
+		}
+
+		this._updateFormData();
+	}
+
+	private _updateFormData() {
 		this.formData = {
 			recordedDate: this.renderRoot.querySelector<HTMLInputElement>(".recordedDate")?.value,
 			rightEye: {
 				medication: IVIMedication[this.renderRoot.querySelector<HTMLSelectElement>(".medication-right")?.value],
-				treatment: {
-					regimen: regimenRight,
-					min: getNumberOrNull(
-						this.renderRoot,
-						regimenRight === IVIRegimen.Fixed ? ".interval-right" : ".min-right"
-					),
-					max: getNumberOrNull(
-						this.renderRoot,
-						regimenRight === IVIRegimen.Fixed ? ".interval-right" : ".max-right"
-					),
-				},
+				regimen: IVIRegimen[this.renderRoot.querySelector<HTMLSelectElement>(".regimen-right")?.value],
+				visus: this.renderRoot.querySelector<HTMLInputElement>(".visus-right")?.checked,
+				appointments: this._weeks_right,
 				note: this.renderRoot.querySelector<HTMLInputElement>(".note-right")?.value,
 			},
 			leftEye: {
 				medication: IVIMedication[this.renderRoot.querySelector<HTMLSelectElement>(".medication-left")?.value],
-				treatment: {
-					regimen: regimenLeft,
-					min: getNumberOrNull(
-						this.renderRoot,
-						regimenLeft === IVIRegimen.Fixed ? ".interval-left" : ".min-left"
-					),
-					max: getNumberOrNull(
-						this.renderRoot,
-						regimenLeft === IVIRegimen.Fixed ? ".interval-left" : ".max-left"
-					),
-				},
+				regimen: IVIRegimen[this.renderRoot.querySelector<HTMLSelectElement>(".regimen-left")?.value],
+				visus: this.renderRoot.querySelector<HTMLInputElement>(".visus-left")?.checked,
+				appointments: this._weeks_left,
 				note: this.renderRoot.querySelector<HTMLInputElement>(".note-left")?.value,
 			},
 		};
@@ -291,9 +304,10 @@ export class IVIComponent extends LitElement {
 		this.validInput = true;
 		this.validationMessage = "";
 
-		if (!isValidTreatment(this.formData.leftEye.treatment) && !isValidTreatment(this.formData.rightEye.treatment)) {
+		if (!isValidMedicationAdmin(this.formData.leftEye) && !isValidMedicationAdmin(this.formData.rightEye)) {
 			this.validInput = false;
-			this.validationMessage = "Bitte geben Sie ein gültiges Intervall für mindestens eines der beiden Augen an.";
+			this.validationMessage =
+				"Bitte geben Sie das Behandlungsschemata und Medikament für mindestens eines der beiden Augen an.";
 		}
 	}
 
@@ -312,6 +326,16 @@ export class IVIComponent extends LitElement {
 		css`
 			.ivi-container {
 				margin: 1rem auto;
+			}
+
+			.treatment-input select,
+			.appointment-input select {
+				width: 10em;
+			}
+
+			.treatment-input select:invalid,
+			.appointment-input select:invalid {
+				color: gray;
 			}
 
 			.field-label {
@@ -343,16 +367,12 @@ export class IVIComponent extends LitElement {
 	];
 }
 
-export function isValidMedReq(medReq: {
-	treatment: {
-		regimen: IVIRegimen;
-		min: number;
-		max: number;
-	};
+export function isValidMedicationAdmin(medicationAdmin: {
+	medication: IVIMedication;
+	regimen: IVIRegimen;
+	visus: boolean;
+	appointments: number[];
+	note: string;
 }) {
-	return isValidTreatment(medReq.treatment);
-}
-
-export function isValidTreatment(treatment: { regimen: IVIRegimen; min: number; max: number }): boolean {
-	return Number.isInteger(treatment.min) && Number.isInteger(treatment.max);
+	return medicationAdmin.medication && medicationAdmin.regimen;
 }
