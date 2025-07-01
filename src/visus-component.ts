@@ -194,16 +194,17 @@ export class VisusComponent extends LitElement {
 								/>
                             </div>
                             <div class="inputs-inline">
-                                <div class="visus-input control">
-                                    <div class="visus-input select is-small">
-                                        <select class="visus-right" required @change="${this._updateFormData}">
-                                            <option value="" disabled selected hidden>Visus</option>
-                                            ${visusValues.map(
-												(value) => html` <option value="${value}">${value}</option> `
-											)}
-                                        </select>
-                                    </div>
-                                </div>
+								<div class="field has-addons is-narrow">
+									<div class="visus-input control">
+										<div class="visus-input select is-small">
+											<select class="visus-right" required @change="${this._updateFormData}">
+												<option value="" disabled selected hidden>Visus</option>
+												${visusValues.map((value) => html` <option value="${value}">${value}</option> `)}
+											</select>
+										</div>
+									</div>
+									${this._renderVisusSuffix(this.formData.rightEye.visus)}
+								</div>
                             </div>
 							<div class="inputs-inline">
 								<label class="checkbox">
@@ -245,16 +246,17 @@ export class VisusComponent extends LitElement {
 								/>
                             </div>
                             <div class="inputs-inline">
-                                <div class="visus-input control">
-                                    <div class="visus-input select is-small">
-                                        <select class="visus-left" required @change="${this._updateFormData}">
-                                            <option value="" disabled selected hidden>Visus</option>
-                                            ${visusValues.map(
-												(value) => html` <option value="${value}">${value}</option> `
-											)}
-                                        </select>
-                                    </div>
-                                </div>
+								<div class="field has-addons is-narrow">
+									<div class="visus-input control">
+										<div class="visus-input select is-small">
+											<select class="visus-left" required @change="${this._updateFormData}">
+												<option value="" disabled selected hidden>Visus</option>
+												${visusValues.map((value) => html` <option value="${value}">${value}</option> `)}
+											</select>
+										</div>
+									</div>
+									${this._renderVisusSuffix(this.formData.leftEye.visus)}
+								</div>
                             </div>
 							<div class="inputs-inline">
 								<label class="checkbox">
@@ -278,6 +280,18 @@ export class VisusComponent extends LitElement {
 					</button>
             </section>
         `;
+	}
+
+	private _renderVisusSuffix(visus: string) {
+		if (visus.includes(".") || visus.includes(",")) {
+			return html`<p class="button is-static is-small">dec</p>`;
+		}
+
+		if (visus.includes("/")) {
+			return html`<p class="button is-static is-small">m</p>`;
+		}
+
+		return null;
 	}
 
 	private _updateFormData() {
