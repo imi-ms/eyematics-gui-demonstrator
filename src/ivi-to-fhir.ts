@@ -1,8 +1,16 @@
-import { Bundle, Medication, MedicationAdministration, Reference } from "@fhir-typescript/r4b-core/dist/fhir";
+import {
+	Bundle,
+	Medication,
+	MedicationAdministration,
+	Observation,
+	Reference,
+} from "@fhir-typescript/r4b-core/dist/fhir";
 import { IVIData, IVIMedication, IVIRegimen } from "./ivi-data.ts";
 import { snomed } from "./tonometry-to-fhir.ts";
-import { MedicationAdminStatusCodes } from "@fhir-typescript/r4b-core/dist/valueSetCodes";
+import { MedicationAdminStatusCodes, ObservationStatusCodes } from "@fhir-typescript/r4b-core/dist/valueSetCodes";
 import { isValidMedicationAdmin } from "./ivi-component.ts";
+import { PresenceStatus2Fhir } from "./funduscopy-to-fhir.ts";
+import { PresenceStatus } from "./funduscopy-data.ts";
 
 const Medication2Fhir = {
 	[IVIMedication.Af2]: "",
@@ -60,9 +68,26 @@ export async function ivi2Fhir(data: IVIData): Promise<Bundle[]> {
 			},
 		});
 
+		let visusLeft = new Observation({
+			status: ObservationStatusCodes.Final,
+			category: [
+				{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
+			],
+			code: {
+				coding: [snomed("260295004", "Sees hand movements (finding)")],
+			},
+			effectiveDateTime: new Date(data.recordedDate).toISOString(),
+			valueCodeableConcept: {
+				coding: PresenceStatus2Fhir[data.leftEye.visus ? PresenceStatus.Present : PresenceStatus.Absent],
+			},
+			bodySite: {
+				coding: [snomed("1290041000", "Entire left eye proper (body structure)")],
+			},
+		});
+
 		let left = new Bundle({
 			type: "collection",
-			entry: [{ resource: medReqLeft }, { resource: medicationLeft }],
+			entry: [{ resource: medReqLeft }, { resource: medicationLeft }, { resource: visusLeft }],
 		});
 
 		result.push(left);
@@ -101,9 +126,26 @@ export async function ivi2Fhir(data: IVIData): Promise<Bundle[]> {
 			},
 		});
 
+		let visusRight = new Observation({
+			status: ObservationStatusCodes.Final,
+			category: [
+				{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "exam" }] },
+			],
+			code: {
+				coding: [snomed("260295004", "Sees hand movements (finding)")],
+			},
+			effectiveDateTime: new Date(data.recordedDate).toISOString(),
+			valueCodeableConcept: {
+				coding: PresenceStatus2Fhir[data.rightEye.visus ? PresenceStatus.Present : PresenceStatus.Absent],
+			},
+			bodySite: {
+				coding: [snomed("1290043002", "Entire right eye proper (body structure)")],
+			},
+		});
+
 		let right = new Bundle({
 			type: "collection",
-			entry: [{ resource: medReqRight }, { resource: medicationRight }],
+			entry: [{ resource: medReqRight }, { resource: medicationRight }, { resource: visusRight }],
 		});
 
 		result.push(right);

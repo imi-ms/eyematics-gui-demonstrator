@@ -112,7 +112,7 @@ export class IVIComponent extends LitElement {
 							<div class="inputs-inline">
 								<label class="checkbox">
 									<input class="visus-right" type="checkbox" @input="${this._updateFormData}" />
-									<span class="checkbox-label"> Handbewegungen sichtbar</span>
+									<span class="checkbox-label"> Wahrnehmung von Handbewegungen</span>
 								</label>
 							</div>
 							<label class="label">Nächste Spritze(n):</label>
@@ -205,7 +205,7 @@ export class IVIComponent extends LitElement {
 							<div class="inputs-inline">
 								<label class="checkbox">
 									<input class="visus-left" type="checkbox" @input="${this._updateFormData}" />
-									<span class="checkbox-label"> Handbewegungen sichtbar</span>
+									<span class="checkbox-label"> Wahrnehmung von Handbewegungen</span>
 								</label>
 							</div>
 							<label class="label">Nächste Spritze(n):</label>
