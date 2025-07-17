@@ -140,16 +140,19 @@ export class OCTComponent extends LitElement {
                                 <div class="control">
                                     <div class="select is-small">
                                         <select class="rnfl-map-right" @change="${this._updateFormData}">
-                                        ${Object.entries(RNFLMap).map(
-											([key, value]) => html`
-												<option
-													value="${key}"
-													?selected=${this.formData.rightEye.rnflThickness.position === value}
-												>
-													${value}
-												</option>
-											`
-										)}
+                                        ${Object.entries(RNFLMap)
+											.slice(0, 21)
+											.map(
+												([key, value]) => html`
+													<option
+														value="${key}"
+														?selected=${this.formData.rightEye.rnflThickness.position ===
+														value}
+													>
+														${value}
+													</option>
+												`
+											)}
                                         </select>
                                     </div>
                                 </div>
@@ -219,16 +222,19 @@ export class OCTComponent extends LitElement {
                                 <div class="control">
                                     <div class="select is-small">
                                         <select class="rnfl-map-left" @change="${this._updateFormData}">
-                                        ${Object.entries(RNFLMap).map(
-											([key, value]) => html`
-												<option
-													value="${key}"
-													?selected=${this.formData.leftEye.rnflThickness.position === value}
-												>
-													${value}
-												</option>
-											`
-										)}
+                                        ${Object.entries(RNFLMap)
+											.slice(21)
+											.map(
+												([key, value]) => html`
+													<option
+														value="${key}"
+														?selected=${this.formData.leftEye.rnflThickness.position ===
+														value}
+													>
+														${value}
+													</option>
+												`
+											)}
                                         </select>
                                     </div>
                                 </div>
